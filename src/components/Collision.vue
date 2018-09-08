@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <main-layout>
     <h1>{{ msg }}</h1>
     <div class="field is-grouped">
       <p class="control" v-on:click=getDeathsSummary>
@@ -22,12 +22,15 @@
     <template v-if="deathsSummary">
        <radar-chart :data="chartData" :options="chartOptions"></radar-chart>
     </template>
-  </div>
+  </main-layout>
 </template>
 
 <script>
 import axios from "axios";
+/* Local Imports*/
 import RadarChart from "./RadarChart";
+import MainLayout from "./../layouts/Main.vue";
+
 /*
  {
         "borough": "QUEENS",
@@ -58,7 +61,7 @@ export default {
           {
             label: "People Killed",
             data: [],
-            fill: true,
+            fill: false,
             backgroundColor: "rgba(255, 199, 132, 0.2)",
             borderColor: "rgb(255,199, 132)",
             pointBackgroundColor: "rgb(255, 199, 132)",
@@ -70,7 +73,7 @@ export default {
           {
             label: "Pedestrians Killed",
             data: [],
-            fill: true,
+            fill: '+1',
             backgroundColor: "rgba(0, 235, 80, 0.4)",
             borderColor: "rgb(0, 235, 80)",
             pointBackgroundColor: "rgb(0, 235, 80)",
@@ -82,7 +85,7 @@ export default {
           {
             label: "Cyclists Killed",
             data: [],
-            fill: true,
+            fill: '+1',
             backgroundColor: "rgba(200, 255, 0, 0.4)",
             borderColor: "rgb(200, 255, 0)",
             //borderWidth: 1,
@@ -95,7 +98,7 @@ export default {
           {
             label: "Motorists Killed",
             data: [],
-            fill: true,
+            fill: '+1',
             backgroundColor: "rgba(10, 0, 255, 0.4)",
             borderColor: "rgb(10, 0, 255)",
             pointBackgroundColor: "rgb(10, 0, 255)",
@@ -136,6 +139,7 @@ export default {
     //this.getDeathsSummary();
   },
   components: {
+    MainLayout,
     RadarChart
   },
   methods: {
