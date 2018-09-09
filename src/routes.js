@@ -2,5 +2,5 @@
 
 export default {
   "/": "Home",
-  stats: "NYC Fatalities"
+  "/stats": "Collision"
 };

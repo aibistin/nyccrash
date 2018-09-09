@@ -7,6 +7,7 @@
 <script>
   import MainLayout from '../layouts/Main.vue'
   export default {
+    name: "404",
     components: {
       MainLayout
     }

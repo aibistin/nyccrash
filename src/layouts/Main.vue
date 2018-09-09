@@ -2,7 +2,7 @@
   <div class="container">
     <ul>
       <li>
-      <v-link href="/">Home</v-link>
+      <v-link href="/">Home Page </v-link>
       <v-link href="/stats">NYC Fatalities Summary</v-link>
       </li>
     </ul>
