@@ -1,32 +1,16 @@
 <template>
   <main-layout>
     <h1>{{ msg }}</h1>
-    <div class="field is-grouped">
-      <p class="control" v-on:click=getDeathsSummary>
-        <a class="button is-link">
-          Total Deaths By Borough
-        </a>
-      </p>
-      <p class="control">
-        <a class="button">
-          Placemat...
-        </a>
-      </p>
-      <p class="control">
-        <a class="button is-danger">
-         Placemat....
-        </a>
-      </p>
-    </div>
-    <!-- <p>{{ deathsSummary }}</p> -->
     <template v-if="deathsSummary">
-       <radar-chart :data="chartData" :options="chartOptions"></radar-chart>
+       <h3>From {{deathsMeta.startingAt.format("YYYY-MM-DD") }} to {{ deathsMeta.endingAt.format("YYYY-MM-DD") }}</h3>
+         <radar-chart :data="chartData" :options="chartOptions"></radar-chart>
     </template>
   </main-layout>
 </template>
 
 <script>
 import axios from "axios";
+import moment from "moment";
 /* Local Imports*/
 import RadarChart from "./RadarChart";
 import MainLayout from "./../layouts/Main.vue";
@@ -55,68 +39,22 @@ export default {
   data: function() {
     return {
       deathsSummary: null,
+      deathsMeta: {
+        startingAt: null,
+        endingAt: null
+      },
       chartData: {
         labels: [],
-        datasets: [
-          {
-            label: "People Killed",
-            data: [],
-            fill: false,
-            backgroundColor: "rgba(255, 199, 132, 0.2)",
-            borderColor: "rgb(255,199, 132)",
-            pointBackgroundColor: "rgb(255, 199, 132)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
-            pointHoverBorderColor: "rgb(255, 199, 132)",
-            pointStyle: "cross"
-          },
-          {
-            label: "Pedestrians Killed",
-            data: [],
-            fill: '+1',
-            backgroundColor: "rgba(0, 235, 80, 0.4)",
-            borderColor: "rgb(0, 235, 80)",
-            pointBackgroundColor: "rgb(0, 235, 80)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
-            pointHoverBorderColor: "rgb(0, 235, 80)",
-            pointStyle: "star"
-          },
-          {
-            label: "Cyclists Killed",
-            data: [],
-            fill: '+1',
-            backgroundColor: "rgba(200, 255, 0, 0.4)",
-            borderColor: "rgb(200, 255, 0)",
-            //borderWidth: 1,
-            pointBackgroundColor: "rgb(200, 255, 0)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
-            pointHoverBorderColor: "rgb(200, 255, 0)",
-            pointStyle: "crossRot"
-          },
-          {
-            label: "Motorists Killed",
-            data: [],
-            fill: '+1',
-            backgroundColor: "rgba(10, 0, 255, 0.4)",
-            borderColor: "rgb(10, 0, 255)",
-            pointBackgroundColor: "rgb(10, 0, 255)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
-            pointHoverBorderColor: "rgb(10, 0, 255)",
-            pointStyle: "triangle"
-          }
-        ]
+        datasets: []
       },
       chartOptions: {
         elements: {
-          line: { tension: 0.2, borderWidth: 2 }
+          line: { tension: 0.1, borderWidth: 2 }
           //line: { stepped: true, borderWidth: 2 }
         },
         title: {
           display: true,
-          text: "Deaths By Borough",
+          text: "Fatalities By Borough",
           fontSize: 18,
           lineHeight: 1.8,
           fontColor: "#333"
@@ -136,18 +74,16 @@ export default {
     };
   },
   mounted() {
-    //this.getDeathsSummary();
+    if (!this.deathsSummary) {
+      this.getDeathsSummary();
+    }
   },
   components: {
     MainLayout,
     RadarChart
   },
   methods: {
-    getDeathsSummary(e) {
-      if (e) {
-        console.log("Clicked 'getDeaths'", e);
-      }
-
+    getDeathsSummary() {
       let baseURL = "https://data.cityofnewyork.us/resource/";
       let url = "/qiz3-axqb.json";
       let socSql = `MIN(date) AS starting_at,MAX(date) AS ending_at,
@@ -161,8 +97,35 @@ export default {
                     MAX(number_of_motorist_killed) as max_motorist_killed_in_single_accident
                     &$group=borough
                     `;
-                    //&$having=borough <> "NoBorough"
-                    //;
+      //&$having=borough <> "NoBorough"
+      //;
+      let datasetAttr = [
+        {
+          label: "People Killed",
+          field: "killed_sum",
+          fill: false,
+          color: "255,199,132"
+        },
+        {
+          label: "Pedestrians Killed",
+          field: "tot_pedestrians_killed",
+          fill: false,
+          color: "0,235,80"
+        },
+        {
+          label: "Cyclists Killed",
+          field: "tot_cyclist_killed",
+          fill: "+2",
+          color: "200,235,0"
+        },
+        {
+          label: "Motorists Killed",
+          field: "tot_motorists_killed",
+          fill: "+1",
+          color: "10,0,255"
+        }
+      ];
+
       let that = this;
       url = url + "?$select=" + socSql;
       axios({
@@ -172,35 +135,37 @@ export default {
       })
         .then(function(response) {
           console.log("Success!");
-          // console.log(response);
           //console.log("Data: " + JSON.stringify(response.data, null, 2));
           console.log("Record Ct: " + response.data.length);
           that.deathsSummary = response.data;
           that.chartData.labels = that.deathsSummary.map(item => item.borough);
-          console.log(
-            "Labels: ",
-            JSON.stringify(that.chartData.labels, null, 2)
+          // console.log( "Labels: ", JSON.stringify(that.chartData.labels, null, 2));
+          that.deathsMeta.startingAt = moment(
+            that.deathsSummary[0].starting_at
           );
-          that.chartData.datasets[0].data = that.deathsSummary.map(
-            item => item.killed_sum
-          );
-          that.chartData.datasets[1].data = that.deathsSummary.map(
-            item => item.tot_pedestrians_killed
-          );
-          that.chartData.datasets[2].data = that.deathsSummary.map(
-            item => item.tot_cyclist_killed
-          );
-          that.chartData.datasets[3].data = that.deathsSummary.map(
-            item => item.tot_motorists_killed
-          );
-          console.log(
-            "Killed: ",
-            JSON.stringify(that.chartData.datasets[0].data, null, 2)
-          );
-          console.log(
-            "Peds Killed: ",
-            JSON.stringify(that.chartData.datasets[1].data, null, 2)
-          );
+          that.deathsMeta.endingAt = moment(that.deathsSummary[0].ending_at);
+
+          datasetAttr.forEach((attrItem, i) => {
+            let rgbColor = `rgb(${attrItem.color})`;
+
+            let cDataset = {
+              label: attrItem.label,
+              field: attrItem.field,
+              fill: attrItem.fill,
+              backgroundColor: `rgb(${attrItem.color},0.2)`,
+              borderColor: rgbColor,
+              pointBackgroundColor: rgbColor,
+              pointHoverBorderColor: rgbColor,
+              pointStyle: "cross",
+              pointBorderColor: "#fff",
+              pointHoverBackgroundColor: "#fff"
+            };
+            /* Data for each Fatality category */
+            cDataset.data = that.deathsSummary.map(
+              item => item[attrItem.field]
+            );
+            that.chartData.datasets[i] = cDataset;
+          });
         })
         .catch(function(error) {
           console.log("Got an error!");
@@ -217,6 +182,7 @@ export default {
             // http.ClientRequest in node.js
             console.log("Error req: ", JSON.stringify(error.request, null, 2));
           } else {
+            console.log("Error: " + JSON.stringify(error, null, 2)); // Request failed
             console.log("Error msg: " + error.message); // Request failed
           }
         });

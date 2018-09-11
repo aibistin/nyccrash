@@ -1,12 +1,18 @@
 <template>
   <div class="container">
-    <ul>
-      <li>
-      <v-link href="/">Home Page </v-link>
-      <v-link href="/stats">NYC Fatalities Summary</v-link>
-      </li>
-    </ul>
-
+    <div class="field is-grouped">
+      <p class="control">
+        <v-link class="button" href="/">Home</v-link>
+      </p>
+      <p class="control">
+        <v-link class="button" href="/stats">NYC Traffic Fatalities Summary</v-link>
+      </p>
+      <p class="control">
+        <a class="button is-danger">
+         Placemat....
+        </a>
+      </p>
+    </div>
     <slot></slot>
   </div>
 </template>
@@ -24,6 +30,6 @@ export default {
 
 <style lang="scss">
 .container {
-  background: inherit,
+  background: inherit
 }
 </style>
