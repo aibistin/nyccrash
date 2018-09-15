@@ -4,12 +4,15 @@
     <template v-if="deathsSummary">
       <div class="grid-container">
         <div class="item item--1">
-          <p>From {{ deathsMeta.startingAt | formatYYMMDD }} to {{ deathsMeta.endingAt | formatYYMMDD }}</p>
+          <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
+          <ul>
+            <li v-for="cat in dataMeta.categories">Total {{cat.name.toUpperCase() }} killed = {{ cat.total }}</li>
+          </ul> 
           <radar-chart :data="boroughChartData" :options="boroughChartOptions"></radar-chart>
         </div>
         <!--
         <div class="item item--2">
-          <p>From {{ deathsMeta.startingAt | formatYYMMDD }} to {{ deathsMeta.endingAt | formatYYMMDD }}</p>
+          <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
           <radar-chart :data="categoryChartData" :options="categoryChartOptions"></radar-chart>
         </div>
         -->
@@ -30,13 +33,13 @@ import MainLayout from "./../layouts/Main.vue";
  {
         "borough": "QUEENS",
         "ending_at": "2018-08-26T00:00:00.000",
-        "killed_sum": "305",
+        "tot_persons_killed": "305",
         "max_cyclist_killed_in_single_accident": "1",
-        "max_killed_in_single_accident": "5",
+        "max_persons_killed_in_single_accident": "5",
         "max_motorist_killed_in_single_accident": "5",
         "max_pedestrians_killed_in_single_accident": "2",
         "starting_at": "2012-07-01T00:00:00.000",
-        "tot_cyclist_killed": "22",
+        "tot_cyclists_killed": "22",
         "tot_motorists_killed": "111",
         "tot_pedestrians_killed": "172"
     },
@@ -51,9 +54,10 @@ export default {
   data: function() {
     return {
       deathsSummary: null,
-      deathsMeta: {
+      dataMeta: {
         startingAt: null,
-        endingAt: null
+        endingAt: null,
+        categories: []
       },
       /* See https://www.chartjs.org/ */
       /* By Borough */
@@ -103,64 +107,16 @@ export default {
       let url = "/qiz3-axqb.json";
       let socSql = `MIN(date) AS starting_at,MAX(date) AS ending_at,
                     coalesce(borough,"Unknown Borough") AS borough,
-                    SUM(number_of_persons_killed) as killed_sum,SUM(number_of_pedestrians_killed) as tot_pedestrians_killed,
-                    SUM(number_of_cyclist_killed) as tot_cyclist_killed,
+                    SUM(number_of_persons_killed) as tot_persons_killed,SUM(number_of_pedestrians_killed) as tot_pedestrians_killed,
+                    SUM(number_of_cyclist_killed) as tot_cyclists_killed,
                     SUM(number_of_motorist_killed) as tot_motorists_killed,
-                    MAX(number_of_persons_killed) as max_killed_in_single_accident,
+                    MAX(number_of_persons_killed) as max_persons_killed_in_single_accident,
                     MAX(number_of_pedestrians_killed) as max_pedestrians_killed_in_single_accident,
-                    MAX(number_of_cyclist_killed) as max_cyclist_killed_in_single_accident,
-                    MAX(number_of_motorist_killed) as max_motorist_killed_in_single_accident
+                    MAX(number_of_cyclist_killed) as max_cyclists_killed_in_single_accident,
+                    MAX(number_of_motorist_killed) as max_motorists_killed_in_single_accident
                     &$group=borough
                     `;
       //&$having=borough <> "Unknown Borough"
-      //;
-      /*
-      let boroughChartDatasetAttr = [
-        {
-          label: "People Killed",
-          field: "killed_sum",
-          fill: false,
-          redGreenBlue: "255,199,132"
-        },
-        {
-          label: "Pedestrians Killed",
-          field: "tot_pedestrians_killed",
-          fill: false,
-          redGreenBlue: "0,235,80"
-        },
-        {
-          label: "Cyclists Killed",
-          field: "tot_cyclist_killed",
-          fill: "+2",
-          redGreenBlue: "200,235,0"
-        },
-        {
-          label: "Motorists Killed",
-          field: "tot_motorists_killed",
-          fill: "+1",
-          redGreenBlue: "10,0,255"
-        }
-      ];
-      */
-      /*
-      let categoryChartDatasetAttr = [
-        {
-          label: "Pedestrians Killed",
-          field: "tot_pedestrians_killed",
-          redGreenBlue: "0,235,80"
-        },
-        {
-          label: "Cyclists Killed",
-          field: "tot_cyclist_killed",
-          redGreenBlue: "200,235,0"
-        },
-        {
-          label: "Motorists Killed",
-          field: "tot_motorists_killed",
-          redGreenBlue: "10,0,255"
-        }
-      ];
-*/
       url = url + "?$select=" + socSql;
 
       axios({
@@ -177,23 +133,35 @@ export default {
             item => item.borough
           );
 
-          console.log( "Chart labels: " + JSON.stringify(this.boroughChartData.labels));
+          console.log(
+            "Chart labels: " + JSON.stringify(this.boroughChartData.labels)
+          );
 
           /* Date range */
-          this.deathsMeta.startingAt = this.deathsSummary[0].starting_at;
-          this.deathsMeta.endingAt = this.deathsSummary[0].ending_at;
-          let fields = [
-            "killed_sum",
-            "tot_pedestrians_killed",
-            "tot_cyclist_killed",
-            "tot_motorists_killed"
+          this.dataMeta.startingAt = this.deathsSummary[0].starting_at;
+          this.dataMeta.endingAt = this.deathsSummary[0].ending_at;
+
+          let totalKilled,
+            totalPedestriansKilled,
+            totalCyclistsKilled,
+            totalMotoristsKilled;
+
+          this.dataMeta.categories = [
+            { name: "persons", total: 0, avg: 0, maxOneTime: 0 },
+            { name: "pedestrians", total: 0, avg: 0, maxOneTime: 0 },
+            { name: "cyclists" , total: 0, avg: 0, maxOneTime: 0 },
+            { name: "motorists" , total: 0, avg: 0, maxOneTime: 0 }
           ];
 
           this.boroughChartData.datasets = this.boroughChartDataConfig.datasets;
 
           this.deathsSummary.forEach(boroughRec => {
-            fields.forEach((field, idx) => {
-              this.boroughChartData.datasets[idx].data.push(boroughRec[field]);
+            this.dataMeta.categories.forEach((category, idx) => {
+              let catBoroughTot =
+                boroughRec["tot_" + category.name + "_killed"];
+                console.log("Cat boro total: " + catBoroughTot);
+              this.boroughChartData.datasets[idx].data.push(catBoroughTot);
+              this.dataMeta.categories[idx].total += Number(catBoroughTot);
             });
           });
         })

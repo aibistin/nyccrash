@@ -21,8 +21,8 @@ export const boroughRadiusChartConfig = {
             backgroundColor: "rgba(255, 255,0, 0.4)",
             borderColor: "rgb(255,255,0)",
             pointBackgroundColor: "rgb(255,255,0)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
+            pointBorderColor: "rgb(169,169,169)",
+            pointHoverBackgroundColor: "rgba(255,255,0,0.4)",
             pointHoverBorderColor: "rgb(255,255,0)",
             pointStyle: "cross"
           },
@@ -30,13 +30,13 @@ export const boroughRadiusChartConfig = {
             label: "Pedestrians Killed",
             data: [],
             fill: "+2",
-            backgroundColor: "rgba(255,0,0,0.4)",
+            backgroundColor: "rgba(255,0,0,0.2)",
             borderColor: "rgb(255,0,0)",
             pointBackgroundColor: "rgb(255,0,0)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
+            pointBorderColor: "rgb(169,169,169)",
+            pointHoverBackgroundColor: "rgba(255,0,0,0.2)",
             pointHoverBorderColor: "rgb(255,0,0)",
-            pointStyle: "star"
+            pointStyle: "cross"
           },
           {
             label: "Cyclists Killed",
@@ -46,10 +46,10 @@ export const boroughRadiusChartConfig = {
             borderColor: "rgb(0,255,0)",
             //borderWidth: 1,
             pointBackgroundColor: "rgb(0,255,0)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
+            pointBorderColor: "rgb(169,169,169)",
+            pointHoverBackgroundColor: "rgba(0,255,0,0.4)",
             pointHoverBorderColor: "rgb(0,255,0)",
-            pointStyle: "crossRot"
+            pointStyle: "cross"
           },
           {
             label: "Motorists Killed",
@@ -58,10 +58,10 @@ export const boroughRadiusChartConfig = {
             backgroundColor: "rgba(0,0,255,0.4)",
             borderColor: "rgb(0,0,255)",
             pointBackgroundColor: "rgb(0,0,255)",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
+            pointBorderColor: "rgb(169,169,169)",
+            pointHoverBackgroundColor: "rgba(0,0,255,0.4)",
             pointHoverBorderColor: "rgb(0,0,255)",
-            pointStyle: "triangle"
+            pointStyle: "cross"
           }
         ]
       },
