@@ -23,7 +23,7 @@
 import axios from "axios";
 import moment from "moment";
 /* Local Imports*/
-import { boroughRadiusChartConfig, categoryPieChartConfig  } from "./mixins/BoroughChartjsConfig";
+import { boroughRadiusChartConfig, categoryPieChartConfig  } from "./configs/Config";
 import RadarChart from "./RadarChart";
 import PieChart from "./PieChart";
 import MainLayout from "./../layouts/Main.vue";
@@ -49,7 +49,6 @@ export default {
   props: {
     msg: String
   },
-  mixins: [boroughRadiusChartConfig],
   data: function() {
     return {
       deathsSummary: null,
@@ -63,6 +62,7 @@ export default {
         labels: [],
         datasets: []
       },
+      boroughChartOptions: {}, 
       /* By Category */
       totalsCategoryChartData: {
         labels: ["Pedestrians", "Motorists", "Cyclists"],
@@ -107,14 +107,6 @@ export default {
           console.log("Record Ct: " + response.data.length);
           // console.log( "Response data: " + JSON.stringify(response.data, null, 2));
           this.deathsSummary = response.data;
-          /* Labels are NYC Boroughs */
-          this.boroughChartData.labels = this.deathsSummary.map(
-            item => item.borough
-          );
-
-          console.log(
-            "Chart labels: " + JSON.stringify(this.boroughChartData.labels)
-          );
 
           /* Date range */
           this.dataMeta.startingAt = this.deathsSummary[0].starting_at;
@@ -132,7 +124,18 @@ export default {
             { name: "motorists" , total: 0, avg: 0, maxOneTime: 0 }
           ];
       
-          this.boroughChartData.datasets = this.boroughChartDataConfig.datasets;
+          /* Get Radius Chart Configs */
+          //console.log( "B: Options: " + JSON.stringify(boroughRadiusChartConfig.options));
+          this.boroughChartOptions = boroughRadiusChartConfig.options;
+
+          this.boroughChartData.datasets = boroughRadiusChartConfig.datasetConfig;
+
+          /* Labels are NYC Boroughs */
+          this.boroughChartData.labels = this.deathsSummary.map(
+            item => item.borough
+          );
+
+          console.log( "labels: " + JSON.stringify(this.boroughChartData.labels));
 
           this.deathsSummary.forEach(boroughRec => {
             this.dataMeta.categories.forEach((category, idx) => {
@@ -143,11 +146,13 @@ export default {
             });
           });
 
-          console.log("Category config: " + JSON.stringify(this.categoryPieChartConfig,null,2) );
-          //console.log("Category config: " + JSON.stringify(this.categoryChartDataConfig.datasets,null,2) );
-          this.totalsCategoryChartData.datasets  = this.categoryChartDataConfig.datasets;
-            this.dataMeta.categories.forEach((category, idx) => {
-              this.totalsCategoryChartData.datasets[idx].data.push(this.dataMeta.categories[idx].total);
+
+          /* Get Pie Chart Configs */
+          this.totalsCategoryChartData.datasets = categoryPieChartConfig.datasetConfig;
+
+              this.totalsCategoryChartData.datasets[0].data = 
+            this.dataMeta.categories.slice(1).map((category, idx) => {
+               return this.dataMeta.categories[idx].total;
             });
 
         })
