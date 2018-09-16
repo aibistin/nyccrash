@@ -6,16 +6,14 @@
         <div class="item item--1">
           <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
           <ul>
-            <li v-for="cat in dataMeta.categories">Total {{cat.name.toUpperCase() }} killed = {{ cat.total }}</li>
+            <li v-for="cat in dataMeta.categories">Total {{cat.name | uCaseFirst}} killed = {{ cat.total }}</li>
           </ul> 
-          <radar-chart :data="boroughChartData" :options="boroughChartOptions"></radar-chart>
+          <pie-chart :data="totalsCategoryChartData" ></pie-chart>
         </div>
-        <!--
         <div class="item item--2">
           <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
-          <radar-chart :data="categoryChartData" :options="categoryChartOptions"></radar-chart>
+          <radar-chart :data="boroughChartData" :options="boroughChartOptions"></radar-chart>
         </div>
-        -->
       </div>
     </template>
   </main-layout>
@@ -25,8 +23,9 @@
 import axios from "axios";
 import moment from "moment";
 /* Local Imports*/
-import { boroughRadiusChartConfig } from "./mixins/BoroughChartjsConfig";
+import { boroughRadiusChartConfig, categoryPieChartConfig  } from "./mixins/BoroughChartjsConfig";
 import RadarChart from "./RadarChart";
+import PieChart from "./PieChart";
 import MainLayout from "./../layouts/Main.vue";
 
 /*
@@ -59,37 +58,16 @@ export default {
         endingAt: null,
         categories: []
       },
-      /* See https://www.chartjs.org/ */
       /* By Borough */
       boroughChartData: {
         labels: [],
         datasets: []
       },
       /* By Category */
-      categoryChartData: {
-        labels: ["Pedestrian", "Motorist", "Cyclist"],
+      totalsCategoryChartData: {
+        labels: ["Pedestrians", "Motorists", "Cyclists"],
         datasets: []
       },
-      categoryChartOptions: {
-        elements: {
-          line: { tension: 0.1, borderWidth: 2 }
-        },
-        title: {
-          display: true,
-          text: "Fatalities By Category",
-          fontSize: 18,
-          lineHeight: 1.8,
-          fontColor: "#333"
-        },
-        layout: {
-          padding: {
-            top: 5,
-            bottom: 5,
-            left: 5,
-            right: 5
-          }
-        }
-      }
     };
   },
   mounted() {
@@ -99,7 +77,8 @@ export default {
   },
   components: {
     MainLayout,
-    RadarChart
+    RadarChart,
+    PieChart
   },
   methods: {
     getDeathsSummary() {
@@ -152,18 +131,25 @@ export default {
             { name: "cyclists" , total: 0, avg: 0, maxOneTime: 0 },
             { name: "motorists" , total: 0, avg: 0, maxOneTime: 0 }
           ];
-
+      
           this.boroughChartData.datasets = this.boroughChartDataConfig.datasets;
 
           this.deathsSummary.forEach(boroughRec => {
             this.dataMeta.categories.forEach((category, idx) => {
               let catBoroughTot =
                 boroughRec["tot_" + category.name + "_killed"];
-                console.log("Cat boro total: " + catBoroughTot);
               this.boroughChartData.datasets[idx].data.push(catBoroughTot);
               this.dataMeta.categories[idx].total += Number(catBoroughTot);
             });
           });
+
+          console.log("Category config: " + JSON.stringify(this.categoryPieChartConfig,null,2) );
+          //console.log("Category config: " + JSON.stringify(this.categoryChartDataConfig.datasets,null,2) );
+          this.totalsCategoryChartData.datasets  = this.categoryChartDataConfig.datasets;
+            this.dataMeta.categories.forEach((category, idx) => {
+              this.totalsCategoryChartData.datasets[idx].data.push(this.dataMeta.categories[idx].total);
+            });
+
         })
         .catch(error => {
           console.log("Got an error!");
@@ -186,6 +172,9 @@ export default {
   filters: {
     formatYYMMDD(inDateStr) {
       return inDateStr ? moment(inDateStr).format("YYYY-MM-DD") : "";
+    },
+    uCaseFirst(inStr) {
+      return inStr ? inStr.charAt(0).toUpperCase() + inStr.slice(1).toLowerCase() : "";
     }
   }
 };
@@ -207,6 +196,7 @@ export default {
   font-family: sans-serif;
   color: white; */
 }
+
 item--1 {
   /*grid-row-start: 2;
     grid-row-end: 3;

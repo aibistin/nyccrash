@@ -7,7 +7,7 @@
  *  RadiusChart
  */
 /* Borough Radius Chart */
-export const boroughRadiusChartConfig = {
+const boroughRadiusChartConfig = {
   data: function() {
     return {
       /* By Borough */
@@ -92,3 +92,48 @@ export const boroughRadiusChartConfig = {
     };
   }
 };
+
+const categoryPieChartConfig = {
+  data: function() {
+    return {
+      /* By Catgegory */
+      categoryChartDataConfig: {
+        labels: [],
+        datasets: [
+          {
+            label: "Pedestrians Killed",
+            data: [],
+            backgroundColor: "rgb(255,0,0)",
+            borderColor: "rgb(169,169,169)",
+            borderWidth: 2,
+            hoverBorderWidth: 1,
+            hoverBackgroundColor: "rgba(255,0,0,0.2)",
+            hoverBorderColor: "rgb(109,109,108)"
+          },
+          {
+            label: "Cyclists Killed",
+            data: [],
+            backgroundColor: "rgb(0,255,0)",
+            borderColor: "rgb(169,169,169)",
+            borderWidth: 2,
+            hoverBorderWidth: 1,
+            hoverBackgroundColor: "rgba(0,255,0,0.2)",
+            hoverBorderColor: "rgb(109,109,108)"
+          },
+          {
+            label: "Motorists Killed",
+            data: [],
+            backgroundColor: "rgb(0,0,255)",
+            borderColor: "rgb(169,169,169)",
+            borderWidth: 2,
+            hoverBorderWidth: 1,
+            hoverBackgroundColor: "rgba(0,0,255,0.2)",
+            hoverBorderColor: "rgb(109,109,108)"
+          }
+        ]
+      }
+    };
+  }
+};
+
+export { boroughRadiusChartConfig, categoryPieChartConfig };
