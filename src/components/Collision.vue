@@ -3,15 +3,16 @@
     <h1>{{ msg }}</h1>
     <template v-if="deathsSummary">
       <div class="grid-container">
-        <div class="item item--1">
+        <div class="item item--header">
           <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
           <ul>
             <li v-for="cat in dataMeta.categories">Total {{cat.name | uCaseFirst}} killed = {{ cat.total }}</li>
           </ul> 
-          <pie-chart :data="totalsCategoryChartData" ></pie-chart>
+        </div>
+        <div class="item item--1">
+          <pie-chart :data="totalsCategoryChartData" :options="totalsCategoryChartOptions"></pie-chart>
         </div>
         <div class="item item--2">
-          <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
           <radar-chart :data="boroughChartData" :options="boroughChartOptions"></radar-chart>
         </div>
       </div>
@@ -21,9 +22,13 @@
 
 <script>
 import axios from "axios";
-import moment from "moment";
+//import moment from "moment";
+import format from "date-fns/format";
 /* Local Imports*/
-import { boroughRadiusChartConfig, categoryPieChartConfig  } from "./configs/Config";
+import {
+  boroughRadiusChartConfig,
+  categoryPieChartConfig
+} from "./configs/Config";
 import RadarChart from "./RadarChart";
 import PieChart from "./PieChart";
 import MainLayout from "./../layouts/Main.vue";
@@ -62,12 +67,13 @@ export default {
         labels: [],
         datasets: []
       },
-      boroughChartOptions: {}, 
+      boroughChartOptions: {},
       /* By Category */
       totalsCategoryChartData: {
-        labels: ["Pedestrians", "Motorists", "Cyclists"],
+        labels: ["Pedestrians", "Cyclists", "Motorists"],
         datasets: []
       },
+      totalsCategoryChartOptions: {},
     };
   },
   mounted() {
@@ -94,6 +100,7 @@ export default {
                     MAX(number_of_cyclist_killed) as max_cyclists_killed_in_single_accident,
                     MAX(number_of_motorist_killed) as max_motorists_killed_in_single_accident
                     &$group=borough
+                    &$$app_token=${process.env.VUE_APP_NYC_APP_TOKEN}
                     `;
       //&$having=borough <> "Unknown Borough"
       url = url + "?$select=" + socSql;
@@ -112,30 +119,27 @@ export default {
           this.dataMeta.startingAt = this.deathsSummary[0].starting_at;
           this.dataMeta.endingAt = this.deathsSummary[0].ending_at;
 
-          let totalKilled,
-            totalPedestriansKilled,
-            totalCyclistsKilled,
-            totalMotoristsKilled;
-
           this.dataMeta.categories = [
             { name: "persons", total: 0, avg: 0, maxOneTime: 0 },
             { name: "pedestrians", total: 0, avg: 0, maxOneTime: 0 },
-            { name: "cyclists" , total: 0, avg: 0, maxOneTime: 0 },
-            { name: "motorists" , total: 0, avg: 0, maxOneTime: 0 }
+            { name: "cyclists", total: 0, avg: 0, maxOneTime: 0 },
+            { name: "motorists", total: 0, avg: 0, maxOneTime: 0 }
           ];
-      
-          /* Get Radius Chart Configs */
-          //console.log( "B: Options: " + JSON.stringify(boroughRadiusChartConfig.options));
-          this.boroughChartOptions = boroughRadiusChartConfig.options;
 
+          /* Get Radius Chart Configs */
+          this.boroughChartOptions = boroughRadiusChartConfig.options;
           this.boroughChartData.datasets = boroughRadiusChartConfig.datasetConfig;
+          const titleDateStr = ` from ${format(this.dataMeta.startingAt,"YYYY/MM/DD")} To ${format(this.dataMeta.endingAt,"YYYY/MM/DD")}`;
+          this.boroughChartOptions.title.text += titleDateStr;
 
           /* Labels are NYC Boroughs */
           this.boroughChartData.labels = this.deathsSummary.map(
             item => item.borough
           );
 
-          console.log( "labels: " + JSON.stringify(this.boroughChartData.labels));
+          console.log(
+            "labels: " + JSON.stringify(this.boroughChartData.labels)
+          );
 
           this.deathsSummary.forEach(boroughRec => {
             this.dataMeta.categories.forEach((category, idx) => {
@@ -146,15 +150,17 @@ export default {
             });
           });
 
-
           /* Get Pie Chart Configs */
           this.totalsCategoryChartData.datasets = categoryPieChartConfig.datasetConfig;
+          this.totalsCategoryChartOptions = categoryPieChartConfig.options;
 
-              this.totalsCategoryChartData.datasets[0].data = 
-            this.dataMeta.categories.slice(1).map((category, idx) => {
-               return this.dataMeta.categories[idx].total;
+          this.totalsCategoryChartOptions.title.text += titleDateStr;
+
+          this.totalsCategoryChartData.datasets[0].data = this.dataMeta.categories
+            .slice(1)
+            .map(category => {
+              return category.total;
             });
-
         })
         .catch(error => {
           console.log("Got an error!");
@@ -176,10 +182,10 @@ export default {
   },
   filters: {
     formatYYMMDD(inDateStr) {
-      return inDateStr ? moment(inDateStr).format("YYYY-MM-DD") : "";
+      return inDateStr ? format(inDateStr,"YYYY-MM-DD") : "";
     },
     uCaseFirst(inStr) {
-      return inStr ? inStr.charAt(0).toUpperCase() + inStr.slice(1).toLowerCase() : "";
+      return (inStr && inStr.charAt(0).toUpperCase() + inStr.slice(1).toLowerCase())
     }
   }
 };
@@ -191,7 +197,7 @@ export default {
   display: grid;
   height: 100%;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
   grid-gap: 1px 1px;
 }
 
@@ -202,13 +208,27 @@ export default {
   color: white; */
 }
 
+item--header {
+  /*grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 3;*/
+  grid-row: 1/2;
+  grid-column: 1/3;
+  z-index: 10;
+}
 item--1 {
   /*grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 2;
     grid-column-end: 3;*/
-  grid-row: 1 / 2;
-  grid-column: 1 / 2;
-  z-index: 10;
+  grid-row: 2/3;
+  grid-column: 1/2;
+  //z-index: 10;
+}
+
+item--2 {
+  grid-row: 2/3;
+  grid-column: 2/3;
 }
 </style>

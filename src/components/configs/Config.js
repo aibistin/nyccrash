@@ -10,7 +10,7 @@
 const boroughRadiusChartConfig = {
   datasetConfig: [
     {
-      label: "People Killed",
+      label: "People",
       data: [],
       fill: false,
       backgroundColor: "rgba(255, 255,0, 0.4)",
@@ -22,7 +22,7 @@ const boroughRadiusChartConfig = {
       pointStyle: "cross"
     },
     {
-      label: "Pedestrians Killed",
+      label: "Pedestrians",
       data: [],
       fill: "+2",
       backgroundColor: "rgba(255,0,0,0.2)",
@@ -34,7 +34,7 @@ const boroughRadiusChartConfig = {
       pointStyle: "cross"
     },
     {
-      label: "Cyclists Killed",
+      label: "Cyclists",
       data: [],
       fill: "+2",
       backgroundColor: "rgba(0,255,0,0.4)",
@@ -47,7 +47,7 @@ const boroughRadiusChartConfig = {
       pointStyle: "cross"
     },
     {
-      label: "Motorists Killed",
+      label: "Motorists",
       data: [],
       fill: "+2",
       backgroundColor: "rgba(0,0,255,0.4)",
@@ -66,7 +66,7 @@ const boroughRadiusChartConfig = {
     },
     title: {
       display: true,
-      text: "Fatalities By Borough",
+      text: "Borough Fatalities",
       fontSize: 18,
       lineHeight: 1.8,
       fontColor: "#333"
@@ -90,40 +90,28 @@ const categoryPieChartConfig = {
     {
       data: [],
       backgroundColor: ["rgb(255,0,0)", "rgb(0,255,0)", "rgb(0,0,255)"]
-      /*
-    {
-      label: "Pedestrians Killed",
-      data: [],
-      backgroundColor: "rgb(255,0,0)",
-      borderColor: "rgb(169,169,169)",
-      borderWidth: 1,
-      hoverBorderWidth: 2,
-      hoverBackgroundColor: "rgba(255,0,0,0.2)",
-      hoverBorderColor: "rgb(109,109,108)"
-    },
-    {
-      label: "Cyclists Killed",
-      data: [],
-      backgroundColor: "rgb(0,255,0)",
-      borderColor: "rgb(169,169,169)",
-      borderWidth: 1,
-      hoverBorderWidth: 2,
-      hoverBackgroundColor: "rgba(0,255,0,0.2)",
-      hoverBorderColor: "rgb(109,109,108)"
-    },
-    {
-      label: "Motorists Killed",
-      data: [],
-      backgroundColor: "rgb(0,0,255)",
-      borderColor: "rgb(169,169,169)",
-      borderWidth: 1,
-      hoverBorderWidth: 2,
-      hoverBackgroundColor: "rgba(0,0,255,0.2)",
-      hoverBorderColor: "rgb(109,109,108)"
     }
-    */
+  ],
+  options: {
+    elements: {
+      line: { tension: 0.1, borderWidth: 2 }
+    },
+    title: {
+      display: true,
+      text: "Fatalities",
+      fontSize: 18,
+      lineHeight: 1.8,
+      fontColor: "#333"
+    },
+    layout: {
+      padding: {
+        top: 5,
+        bottom: 5,
+        left: 5,
+        right: 5
+      }
     }
-  ]
+  }
 };
 
 export { boroughRadiusChartConfig, categoryPieChartConfig };
