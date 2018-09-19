@@ -8,12 +8,18 @@
           <ul>
             <li v-for="cat in dataMeta.categories">Total {{cat.name | uCaseFirst}} killed = {{ cat.total }}</li>
           </ul> 
+          <ul>
+            <li v-for="cat in dataMeta.categories">Max {{cat.name | uCaseFirst}} killed in one collision = {{ cat.maxOneTime }}</li>
+          </ul> 
         </div>
         <div class="item item--1">
           <pie-chart :data="totalsCategoryChartData" :options="totalsCategoryChartOptions"></pie-chart>
         </div>
         <div class="item item--2">
           <radar-chart :data="boroughChartData" :options="boroughChartOptions"></radar-chart>
+        </div>
+        <div class="item item--3">
+          <radar-chart :data="boroughMaxChartData" :options="boroughMaxChartOptions"></radar-chart>
         </div>
       </div>
     </template>
@@ -38,14 +44,14 @@ import MainLayout from "./../layouts/Main.vue";
         "borough": "QUEENS",
         "ending_at": "2018-08-26T00:00:00.000",
         "tot_persons_killed": "305",
-        "max_cyclist_killed_in_single_accident": "1",
-        "max_persons_killed_in_single_accident": "5",
-        "max_motorist_killed_in_single_accident": "5",
-        "max_pedestrians_killed_in_single_accident": "2",
-        "starting_at": "2012-07-01T00:00:00.000",
         "tot_cyclists_killed": "22",
         "tot_motorists_killed": "111",
         "tot_pedestrians_killed": "172"
+        "max_persons_killed_in_single_accident": "5",
+        "max_cyclists_killed_in_single_accident": "1",
+        "max_motorists_killed_in_single_accident": "5",
+        "max_pedestrians_killed_in_single_accident": "2",
+        "starting_at": "2012-07-01T00:00:00.000",
     },
     */
 
@@ -62,18 +68,24 @@ export default {
         endingAt: null,
         categories: []
       },
-      /* By Borough */
+      /* By Borough - Tot Killed for each category in each borough */
       boroughChartData: {
         labels: [],
         datasets: []
       },
       boroughChartOptions: {},
+      /* By Borough - Max Killed in single accident for each category in each borough */
+      boroughMaxChartData: {
+        labels: [],
+        datasets: []
+      },
+      boroughMaxChartOptions: {},
       /* By Category */
       totalsCategoryChartData: {
         labels: ["Pedestrians", "Cyclists", "Motorists"],
         datasets: []
       },
-      totalsCategoryChartOptions: {},
+      totalsCategoryChartOptions: {}
     };
   },
   mounted() {
@@ -126,10 +138,15 @@ export default {
             { name: "motorists", total: 0, avg: 0, maxOneTime: 0 }
           ];
 
-          /* Get Radius Chart Configs */
+          /* Get Radius chart configs for Borough fatality totals */
           this.boroughChartOptions = boroughRadiusChartConfig.options;
-          this.boroughChartData.datasets = boroughRadiusChartConfig.datasetConfig;
-          const titleDateStr = ` from ${format(this.dataMeta.startingAt,"YYYY/MM/DD")} To ${format(this.dataMeta.endingAt,"YYYY/MM/DD")}`;
+          this.boroughChartData.datasets =
+            boroughRadiusChartConfig.datasetConfig;
+          const titleDateStr = ` from ${format(
+            this.dataMeta.startingAt,
+            "YYYY/MM/DD"
+          )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
+
           this.boroughChartOptions.title.text += titleDateStr;
 
           /* Labels are NYC Boroughs */
@@ -150,8 +167,41 @@ export default {
             });
           });
 
+          /* Get Radius chart configs for Borough MAX fatality per accident */
+          this.boroughMaxChartOptions = boroughRadiusChartConfig.options;
+          this.boroughMaxChartData.datasets =
+            boroughRadiusChartConfig.datasetConfig;
+
+          this.boroughMaxChartOptions.title.text =
+            "Max Fatalities per Accident" + titleDateStr;
+
+          /* Labels are NYC Boroughs */
+          this.boroughMaxChartData.labels = this.deathsSummary.map(
+            item => item.borough
+          );
+
+          console.log(
+            "labels: " + JSON.stringify(this.boroughMaxChartData.labels)
+          );
+
+          this.deathsSummary.forEach(boroughRec => {
+            this.dataMeta.categories.forEach((category, idx) => {
+              // "max_persons_killed_in_single_accident": "5",
+              let catBoroughMax =
+                boroughRec[
+                  "max_" + category.name + "_killed_in_single_accident"
+                ];
+              this.boroughMaxChartData.datasets[idx].data.push(catBoroughMax);
+              this.dataMeta.categories[idx].maxOneTime =
+                Number(catBoroughMax) > this.dataMeta.categories[idx].maxOneTime
+                  ? Number(catBoroughMax)
+                  : this.dataMeta.categories[idx].maxOneTime;
+            });
+          });
+
           /* Get Pie Chart Configs */
-          this.totalsCategoryChartData.datasets = categoryPieChartConfig.datasetConfig;
+          this.totalsCategoryChartData.datasets =
+            categoryPieChartConfig.datasetConfig;
           this.totalsCategoryChartOptions = categoryPieChartConfig.options;
 
           this.totalsCategoryChartOptions.title.text += titleDateStr;
@@ -182,10 +232,12 @@ export default {
   },
   filters: {
     formatYYMMDD(inDateStr) {
-      return inDateStr ? format(inDateStr,"YYYY-MM-DD") : "";
+      return inDateStr ? format(inDateStr, "YYYY-MM-DD") : "";
     },
     uCaseFirst(inStr) {
-      return (inStr && inStr.charAt(0).toUpperCase() + inStr.slice(1).toLowerCase())
+      return (
+        inStr && inStr.charAt(0).toUpperCase() + inStr.slice(1).toLowerCase()
+      );
     }
   }
 };
@@ -194,41 +246,54 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .grid-container {
+  box-sizing: border-box;
   display: grid;
   height: 100%;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
-  grid-gap: 1px 1px;
+  grid-template-columns: repeat(2, minmax(max-content, 1fr));
+  grid-auto-rows: minmax(min-content, 1fr);
+  grid-gap: 2rem;
 }
 
 .item {
-  padding: 5px;
-  /* font-size: 20px;
-  font-family: sans-serif;
-  color: white; */
+  padding: 2px;
 }
 
-item--header {
+.item--header {
   /*grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 2;
     grid-column-end: 3;*/
-  grid-row: 1/2;
-  grid-column: 1/3;
-  z-index: 10;
+  align-self: center;
+  justify-self: center;
+  grid-row: 1;
+  grid-column: 1 / -1;
+  align-self: center;
 }
-item--1 {
-  /*grid-row-start: 2;
-    grid-row-end: 3;
-    grid-column-start: 2;
-    grid-column-end: 3;*/
-  grid-row: 2/3;
-  grid-column: 1/2;
-  //z-index: 10;
+.item--1 {
+  align-self: center;
+  justify-self: center;
+  grid-row: 2 / 3;
+  grid-column: 1;
 }
 
-item--2 {
-  grid-row: 2/3;
-  grid-column: 2/3;
+.item--2 {
+  align-self: center;
+  justify-self: center;
+  grid-row: 2 / 3;
+  grid-column: 2 / -1;
+}
+
+.item--3 {
+  align-self: center;
+  justify-self: center;
+  grid-row: 3 / 4;
+  grid-column: 1;
+}
+
+.item--4 {
+  align-self: center;
+  justify-self: center;
+  grid-row: 3 / 4;
+  grid-column: 2 / -1;
 }
 </style>

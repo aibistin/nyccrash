@@ -6,6 +6,15 @@
  * 
  */
 
+const peopleColor = "rgb(255,255,0)";
+const peopleBackColor = "rgba(255, 255,0, 0.2)";
+const pedestrianColor = "rgb(255,0,0)";
+const pedestrianBackColor = "rgba(255,0,0,0.2)";
+const cyclistColor = "rgb(0,255,0)";
+const cyclistBackColor = "rgba(0,255,0,0.2)";
+const motoristColor = "rgb(0,0,255)";
+const motoristBackColor = "rgba(0,0,255,0.2)";
+
 /* Borough Radius Chart */
 const boroughRadiusChartConfig = {
   datasetConfig: [
@@ -13,49 +22,49 @@ const boroughRadiusChartConfig = {
       label: "People",
       data: [],
       fill: false,
-      backgroundColor: "rgba(255, 255,0, 0.4)",
-      borderColor: "rgb(255,255,0)",
-      pointBackgroundColor: "rgb(255,255,0)",
+      backgroundColor: peopleBackColor,
+      borderColor: peopleColor,
+      pointBackgroundColor: peopleColor,
       pointBorderColor: "rgb(169,169,169)",
-      pointHoverBackgroundColor: "rgba(255,255,0,0.4)",
-      pointHoverBorderColor: "rgb(255,255,0)",
+      pointHoverBackgroundColor: peopleBackColor,
+      pointHoverBorderColor: peopleColor,
       pointStyle: "cross"
     },
     {
       label: "Pedestrians",
       data: [],
       fill: "+2",
-      backgroundColor: "rgba(255,0,0,0.2)",
-      borderColor: "rgb(255,0,0)",
-      pointBackgroundColor: "rgb(255,0,0)",
+      backgroundColor: pedestrianBackColor,
+      borderColor: pedestrianColor,
+      pointBackgroundColor: pedestrianColor,
       pointBorderColor: "rgb(169,169,169)",
-      pointHoverBackgroundColor: "rgba(255,0,0,0.2)",
-      pointHoverBorderColor: "rgb(255,0,0)",
+      pointHoverBackgroundColor: pedestrianBackColor,
+      pointHoverBorderColor: pedestrianColor,
       pointStyle: "cross"
     },
     {
       label: "Cyclists",
       data: [],
       fill: "+2",
-      backgroundColor: "rgba(0,255,0,0.4)",
-      borderColor: "rgb(0,255,0)",
+      backgroundColor: cyclistBackColor,
+      borderColor: cyclistColor,
       //borderWidth: 1,
-      pointBackgroundColor: "rgb(0,255,0)",
+      pointBackgroundColor: cyclistColor,
       pointBorderColor: "rgb(169,169,169)",
-      pointHoverBackgroundColor: "rgba(0,255,0,0.4)",
-      pointHoverBorderColor: "rgb(0,255,0)",
+      pointHoverBackgroundColor: cyclistBackColor,
+      pointHoverBorderColor: cyclistColor,
       pointStyle: "cross"
     },
     {
       label: "Motorists",
       data: [],
       fill: "+2",
-      backgroundColor: "rgba(0,0,255,0.4)",
-      borderColor: "rgb(0,0,255)",
-      pointBackgroundColor: "rgb(0,0,255)",
+      backgroundColor: motoristBackColor,
+      borderColor: motoristColor,
+      pointBackgroundColor: motoristColor,
       pointBorderColor: "rgb(169,169,169)",
-      pointHoverBackgroundColor: "rgba(0,0,255,0.4)",
-      pointHoverBorderColor: "rgb(0,0,255)",
+      pointHoverBackgroundColor: motoristBackColor,
+      pointHoverBorderColor: motoristColor,
       pointStyle: "cross"
     }
   ],
@@ -73,10 +82,10 @@ const boroughRadiusChartConfig = {
     },
     layout: {
       padding: {
-        top: 5,
-        bottom: 5,
-        left: 5,
-        right: 5
+        top: 1,
+        bottom: 1,
+        left: 1,
+        right: 1
       }
     },
     scale: {
@@ -89,7 +98,7 @@ const categoryPieChartConfig = {
   datasetConfig: [
     {
       data: [],
-      backgroundColor: ["rgb(255,0,0)", "rgb(0,255,0)", "rgb(0,0,255)"]
+      backgroundColor: [pedestrianColor, cyclistColor, motoristColor]
     }
   ],
   options: {
