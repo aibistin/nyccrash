@@ -137,7 +137,8 @@ export default {
 
           /* Date range */
           this.dataMeta.startingAt = this.deathsSummary[0].starting_at;
-          this.dataMeta.endingAt = this.deathsSummary[0].ending_at;
+          this.dataMeta.endingAt = this.deathsSummary[0].ending_at; 
+  this.dataMeta.titleDateStr = ` from ${format( this.dataMeta.startingAt, "YYYY/MM/DD")} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
 
           this.dataMeta.categories = [
             { name: "persons", total: 0, avg: 0, maxOneTime: 0 },
@@ -146,30 +147,31 @@ export default {
             { name: "motorists", total: 0, avg: 0, maxOneTime: 0 }
           ];
 
+          /* Fatality summary by borough */
           const chartObj1 = populateBoroughChartData(
             this.deathsSummary,
             this.dataMeta,
             boroughRadiusChartConfig
           );
-          this.boroughChartData = chartObj1.boroughChartData;
-          this.boroughChartOptions = chartObj1.boroughChartOptions;
+          this.boroughChartData = chartObj1.chartData;
+          this.boroughChartOptions = chartObj1.chartOptions;
 
+          /* Max Fatalities in a single accident. By Borough */
           const chartObj2 = populateBoroughMaxChartData(
             this.deathsSummary,
             this.dataMeta,
             boroughRadiusChartConfig
           );
-          this.boroughMaxChartData = chartObj2.boroughMaxChartData;
-          this.boroughMaxChartOptions = chartObj2.boroughMaxChartOptions;
+          this.boroughMaxChartData = chartObj2.chartData;
+          this.boroughMaxChartOptions = chartObj2.chartOptions;
           /* Pie Chart */
           let chartObj3 = populateTotalsCategoryChartData(
             this.deathsSummary,
             this.dataMeta,
             categoryPieChartConfig
           );
-          this.totalsCategoryChartData = chartObj3.totalsCategoryChartData;
-          this.totalsCategoryChartOptions =
-            chartObj3.totalsCategoryChartOptions;
+          this.totalsCategoryChartData = chartObj3.chartData;
+          this.totalsCategoryChartOptions = chartObj3.chartOptions;
         })
         .catch(error => {
           console.log("Got an error!");
@@ -207,31 +209,26 @@ function populateBoroughChartData(
   dataMeta,
   boroughRadiusChartConfig
 ) {
-  const titleDateStr = ` from ${format(
-    dataMeta.startingAt,
-    "YYYY/MM/DD"
-  )} To ${format(dataMeta.endingAt, "YYYY/MM/DD")}`;
-
   /* Get Radius chart configs for Borough fatality totals */
-  const boroughChartOptions = boroughRadiusChartConfig.options;
-  boroughChartOptions.title.text += titleDateStr;
+  const chartOptions = boroughRadiusChartConfig.options;
+  chartOptions.title.text += dataMeta.titleDateStr;
 
-  const boroughChartData = {
+  const chartData = {
     /* Labels are NYC Boroughs */
     labels: deathsSummary.map(item => item.borough),
     datasets: boroughRadiusChartConfig.datasetConfig
   };
 
-  console.log("labels: " + JSON.stringify(boroughChartData.labels));
+  console.log("labels: " + JSON.stringify(chartData.labels));
 
   deathsSummary.forEach(boroughRec => {
     dataMeta.categories.forEach((category, idx) => {
       let catBoroughTot = boroughRec["tot_" + category.name + "_killed"];
-      boroughChartData.datasets[idx].data.push(catBoroughTot);
+      chartData.datasets[idx].data.push(catBoroughTot);
       dataMeta.categories[idx].total += Number(catBoroughTot);
     });
   });
-  return { boroughChartOptions, boroughChartData };
+  return { chartOptions, chartData };
 }
 
 function populateBoroughMaxChartData(
@@ -240,29 +237,24 @@ function populateBoroughMaxChartData(
   boroughRadiusChartConfig
 ) {
   /* Get Radius chart configs for Borough MAX fatality per accident */
-  const boroughMaxChartOptions = boroughRadiusChartConfig.options;
-  const titleDateStr = ` from ${format(
-    dataMeta.startingAt,
-    "YYYY/MM/DD"
-  )} To ${format(dataMeta.endingAt, "YYYY/MM/DD")}`;
+  const chartOptions = boroughRadiusChartConfig.options;
+  chartOptions.title.text =
+    "Max Fatalities per Accident" + dataMeta.titleDateStr;
 
-  boroughMaxChartOptions.title.text =
-    "Max Fatalities per Accident" + titleDateStr;
-
-  const boroughMaxChartData = {
+  const chartData = {
     labels: deathsSummary.map(item => item.borough),
     datasets: boroughRadiusChartConfig.datasetConfig
   };
-  boroughMaxChartData.labels = deathsSummary.map(item => item.borough);
+  chartData.labels = deathsSummary.map(item => item.borough);
 
-  console.log("labels: " + JSON.stringify(boroughMaxChartData.labels));
+  console.log("labels: " + JSON.stringify(chartData.labels));
 
   deathsSummary.forEach(boroughRec => {
     dataMeta.categories.forEach((category, idx) => {
       // "max_persons_killed_in_single_accident": "5",
       let catBoroughMax =
         boroughRec["max_" + category.name + "_killed_in_single_accident"];
-      boroughMaxChartData.datasets[idx].data.push(catBoroughMax);
+      chartData.datasets[idx].data.push(catBoroughMax);
       dataMeta.categories[idx].maxOneTime =
         Number(catBoroughMax) > dataMeta.categories[idx].maxOneTime
           ? Number(catBoroughMax)
@@ -270,7 +262,7 @@ function populateBoroughMaxChartData(
     });
   });
 
-  return { boroughMaxChartOptions, boroughMaxChartData };
+  return { chartOptions, chartData };
 }
 
 /* Get Pie Chart Configs */
@@ -279,25 +271,20 @@ function populateTotalsCategoryChartData(
   dataMeta,
   categoryPieChartConfig
 ) {
-  const totalsCategoryChartData = {
+  const chartData = {
     datasets: categoryPieChartConfig.datasetConfig
   };
 
-  const totalsCategoryChartOptions = categoryPieChartConfig.options;
-  const titleDateStr = ` from ${format(
-    dataMeta.startingAt,
-    "YYYY/MM/DD"
-  )} To ${format(dataMeta.endingAt, "YYYY/MM/DD")}`;
+  const chartOptions = categoryPieChartConfig.options;
+  chartOptions.title.text += dataMeta.titleDateStr;
 
-  totalsCategoryChartOptions.title.text += titleDateStr;
-
-  totalsCategoryChartData.datasets[0].data = dataMeta.categories
+  chartData.datasets[0].data = dataMeta.categories
     .slice(1)
     .map(category => {
       return category.total;
     });
 
-  return { totalsCategoryChartOptions, totalsCategoryChartData };
+  return { chartOptions, chartData };
 }
 </script>
 
