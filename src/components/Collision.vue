@@ -92,6 +92,13 @@ export default {
     if (!this.deathsSummary) {
       this.getDeathsSummary();
     }
+    /*     if (!this.deathsSummary) {
+      if (localStorage.deathsSummary) {
+        this.deathsSummary = JSON.parse(localStorage.deathsSummary);
+      } else {
+        this.getDeathsSummary();
+      }
+    } */
   },
   components: {
     MainLayout,
@@ -125,6 +132,7 @@ export default {
         .then(response => {
           console.log("Record Ct: " + response.data.length);
           // console.log( "Response data: " + JSON.stringify(response.data, null, 2));
+          localStorage.deathsSummary = JSON.stringify(response.data, null, 2);
           this.deathsSummary = response.data;
 
           /* Date range */
@@ -138,79 +146,30 @@ export default {
             { name: "motorists", total: 0, avg: 0, maxOneTime: 0 }
           ];
 
-          /* Get Radius chart configs for Borough fatality totals */
-          this.boroughChartOptions = boroughRadiusChartConfig.options;
-          this.boroughChartData.datasets =
-            boroughRadiusChartConfig.datasetConfig;
-          const titleDateStr = ` from ${format(
-            this.dataMeta.startingAt,
-            "YYYY/MM/DD"
-          )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
-
-          this.boroughChartOptions.title.text += titleDateStr;
-
-          /* Labels are NYC Boroughs */
-          this.boroughChartData.labels = this.deathsSummary.map(
-            item => item.borough
+          const chartObj1 = populateBoroughChartData(
+            this.deathsSummary,
+            this.dataMeta,
+            boroughRadiusChartConfig
           );
+          this.boroughChartData = chartObj1.boroughChartData;
+          this.boroughChartOptions = chartObj1.boroughChartOptions;
 
-          console.log(
-            "labels: " + JSON.stringify(this.boroughChartData.labels)
+          const chartObj2 = populateBoroughMaxChartData(
+            this.deathsSummary,
+            this.dataMeta,
+            boroughRadiusChartConfig
           );
-
-          this.deathsSummary.forEach(boroughRec => {
-            this.dataMeta.categories.forEach((category, idx) => {
-              let catBoroughTot =
-                boroughRec["tot_" + category.name + "_killed"];
-              this.boroughChartData.datasets[idx].data.push(catBoroughTot);
-              this.dataMeta.categories[idx].total += Number(catBoroughTot);
-            });
-          });
-
-          /* Get Radius chart configs for Borough MAX fatality per accident */
-          this.boroughMaxChartOptions = boroughRadiusChartConfig.options;
-          this.boroughMaxChartData.datasets =
-            boroughRadiusChartConfig.datasetConfig;
-
-          this.boroughMaxChartOptions.title.text =
-            "Max Fatalities per Accident" + titleDateStr;
-
-          /* Labels are NYC Boroughs */
-          this.boroughMaxChartData.labels = this.deathsSummary.map(
-            item => item.borough
+          this.boroughMaxChartData = chartObj2.boroughMaxChartData;
+          this.boroughMaxChartOptions = chartObj2.boroughMaxChartOptions;
+          /* Pie Chart */
+          let chartObj3 = populateTotalsCategoryChartData(
+            this.deathsSummary,
+            this.dataMeta,
+            categoryPieChartConfig
           );
-
-          console.log(
-            "labels: " + JSON.stringify(this.boroughMaxChartData.labels)
-          );
-
-          this.deathsSummary.forEach(boroughRec => {
-            this.dataMeta.categories.forEach((category, idx) => {
-              // "max_persons_killed_in_single_accident": "5",
-              let catBoroughMax =
-                boroughRec[
-                  "max_" + category.name + "_killed_in_single_accident"
-                ];
-              this.boroughMaxChartData.datasets[idx].data.push(catBoroughMax);
-              this.dataMeta.categories[idx].maxOneTime =
-                Number(catBoroughMax) > this.dataMeta.categories[idx].maxOneTime
-                  ? Number(catBoroughMax)
-                  : this.dataMeta.categories[idx].maxOneTime;
-            });
-          });
-
-          /* Get Pie Chart Configs */
-          this.totalsCategoryChartData.datasets =
-            categoryPieChartConfig.datasetConfig;
-          this.totalsCategoryChartOptions = categoryPieChartConfig.options;
-
-          this.totalsCategoryChartOptions.title.text += titleDateStr;
-
-          this.totalsCategoryChartData.datasets[0].data = this.dataMeta.categories
-            .slice(1)
-            .map(category => {
-              return category.total;
-            });
+          this.totalsCategoryChartData = chartObj3.totalsCategoryChartData;
+          this.totalsCategoryChartOptions =
+            chartObj3.totalsCategoryChartOptions;
         })
         .catch(error => {
           console.log("Got an error!");
@@ -241,6 +200,105 @@ export default {
     }
   }
 };
+
+//this.boroughChartOptions = this.boroughChartData.datasets =
+function populateBoroughChartData(
+  deathsSummary,
+  dataMeta,
+  boroughRadiusChartConfig
+) {
+  const titleDateStr = ` from ${format(
+    dataMeta.startingAt,
+    "YYYY/MM/DD"
+  )} To ${format(dataMeta.endingAt, "YYYY/MM/DD")}`;
+
+  /* Get Radius chart configs for Borough fatality totals */
+  const boroughChartOptions = boroughRadiusChartConfig.options;
+  boroughChartOptions.title.text += titleDateStr;
+
+  const boroughChartData = {
+    /* Labels are NYC Boroughs */
+    labels: deathsSummary.map(item => item.borough),
+    datasets: boroughRadiusChartConfig.datasetConfig
+  };
+
+  console.log("labels: " + JSON.stringify(boroughChartData.labels));
+
+  deathsSummary.forEach(boroughRec => {
+    dataMeta.categories.forEach((category, idx) => {
+      let catBoroughTot = boroughRec["tot_" + category.name + "_killed"];
+      boroughChartData.datasets[idx].data.push(catBoroughTot);
+      dataMeta.categories[idx].total += Number(catBoroughTot);
+    });
+  });
+  return { boroughChartOptions, boroughChartData };
+}
+
+function populateBoroughMaxChartData(
+  deathsSummary,
+  dataMeta,
+  boroughRadiusChartConfig
+) {
+  /* Get Radius chart configs for Borough MAX fatality per accident */
+  const boroughMaxChartOptions = boroughRadiusChartConfig.options;
+  const titleDateStr = ` from ${format(
+    dataMeta.startingAt,
+    "YYYY/MM/DD"
+  )} To ${format(dataMeta.endingAt, "YYYY/MM/DD")}`;
+
+  boroughMaxChartOptions.title.text =
+    "Max Fatalities per Accident" + titleDateStr;
+
+  const boroughMaxChartData = {
+    labels: deathsSummary.map(item => item.borough),
+    datasets: boroughRadiusChartConfig.datasetConfig
+  };
+  boroughMaxChartData.labels = deathsSummary.map(item => item.borough);
+
+  console.log("labels: " + JSON.stringify(boroughMaxChartData.labels));
+
+  deathsSummary.forEach(boroughRec => {
+    dataMeta.categories.forEach((category, idx) => {
+      // "max_persons_killed_in_single_accident": "5",
+      let catBoroughMax =
+        boroughRec["max_" + category.name + "_killed_in_single_accident"];
+      boroughMaxChartData.datasets[idx].data.push(catBoroughMax);
+      dataMeta.categories[idx].maxOneTime =
+        Number(catBoroughMax) > dataMeta.categories[idx].maxOneTime
+          ? Number(catBoroughMax)
+          : dataMeta.categories[idx].maxOneTime;
+    });
+  });
+
+  return { boroughMaxChartOptions, boroughMaxChartData };
+}
+
+/* Get Pie Chart Configs */
+function populateTotalsCategoryChartData(
+  deathsSummary,
+  dataMeta,
+  categoryPieChartConfig
+) {
+  const totalsCategoryChartData = {
+    datasets: categoryPieChartConfig.datasetConfig
+  };
+
+  const totalsCategoryChartOptions = categoryPieChartConfig.options;
+  const titleDateStr = ` from ${format(
+    dataMeta.startingAt,
+    "YYYY/MM/DD"
+  )} To ${format(dataMeta.endingAt, "YYYY/MM/DD")}`;
+
+  totalsCategoryChartOptions.title.text += titleDateStr;
+
+  totalsCategoryChartData.datasets[0].data = dataMeta.categories
+    .slice(1)
+    .map(category => {
+      return category.total;
+    });
+
+  return { totalsCategoryChartOptions, totalsCategoryChartData };
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
