@@ -32,7 +32,7 @@ import axios from "axios";
 import format from "date-fns/format";
 /* Local Imports*/
 import {
-  boroughRadiusChartConfig,
+  boroughRadarChartConfig,
   categoryPieChartConfig
 } from "./configs/Config";
 import RadarChart from "./RadarChart";
@@ -151,7 +151,7 @@ export default {
           const chartObj1 = populateBoroughChartData(
             this.deathsSummary,
             this.dataMeta,
-            boroughRadiusChartConfig
+            boroughRadarChartConfig
           );
           this.boroughChartData = chartObj1.chartData;
           this.boroughChartOptions = chartObj1.chartOptions;
@@ -160,7 +160,7 @@ export default {
           const chartObj2 = populateBoroughMaxChartData(
             this.deathsSummary,
             this.dataMeta,
-            boroughRadiusChartConfig
+            boroughRadarChartConfig
           );
           this.boroughMaxChartData = chartObj2.chartData;
           this.boroughMaxChartOptions = chartObj2.chartOptions;
@@ -207,16 +207,16 @@ export default {
 function populateBoroughChartData(
   deathsSummary,
   dataMeta,
-  boroughRadiusChartConfig
+  boroughRadarChartConfig
 ) {
-  /* Get Radius chart configs for Borough fatality totals */
-  const chartOptions = boroughRadiusChartConfig.options;
+  /* Get Radar chart configs for Borough fatality totals */
+  const chartOptions = boroughRadarChartConfig.options;
   chartOptions.title.text += dataMeta.titleDateStr;
 
   const chartData = {
     /* Labels are NYC Boroughs */
     labels: deathsSummary.map(item => item.borough),
-    datasets: boroughRadiusChartConfig.datasetConfig
+    datasets: boroughRadarChartConfig.datasetConfig
   };
 
   console.log("labels: " + JSON.stringify(chartData.labels));
@@ -234,16 +234,16 @@ function populateBoroughChartData(
 function populateBoroughMaxChartData(
   deathsSummary,
   dataMeta,
-  boroughRadiusChartConfig
+  boroughRadarChartConfig
 ) {
-  /* Get Radius chart configs for Borough MAX fatality per accident */
-  const chartOptions = boroughRadiusChartConfig.options;
+  /* Get Radar chart configs for Borough MAX fatality per accident */
+  const chartOptions = boroughRadarChartConfig.options;
   chartOptions.title.text =
     "Max Fatalities per Accident" + dataMeta.titleDateStr;
 
   const chartData = {
     labels: deathsSummary.map(item => item.borough),
-    datasets: boroughRadiusChartConfig.datasetConfig
+    datasets: boroughRadarChartConfig.datasetConfig
   };
   chartData.labels = deathsSummary.map(item => item.borough);
 

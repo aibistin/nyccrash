@@ -5,7 +5,6 @@
  *  and: https://vue-chartjs.org/
  * 
  */
-
 const peopleColor = "rgb(255,255,0)";
 const peopleBackColor = "rgba(255, 255,0, 0.2)";
 const pedestrianColor = "rgb(255,0,0)";
@@ -15,8 +14,18 @@ const cyclistBackColor = "rgba(0,255,0,0.2)";
 const motoristColor = "rgb(0,0,255)";
 const motoristBackColor = "rgba(0,0,255,0.2)";
 
-/* Borough Radius Chart */
-const boroughRadiusChartConfig = {
+/* Borough Radar Chart */
+
+/*
+class nycRadarChart {
+  constructor(dataSet = [], options = {}) {
+    this.dataset = dataSet;
+    this.options = options;
+  }
+}
+*/
+
+const boroughRadarChartConfig = {
   datasetConfig: [
     {
       label: "People",
@@ -123,4 +132,4 @@ const categoryPieChartConfig = {
   }
 };
 
-export { boroughRadiusChartConfig, categoryPieChartConfig };
+export { boroughRadarChartConfig, categoryPieChartConfig };
