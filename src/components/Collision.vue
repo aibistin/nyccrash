@@ -35,6 +35,7 @@ import {
   boroughRadarChartConfig,
   categoryPieChartConfig
 } from "./configs/Config";
+import { NyRadarChart } from "./configs/NyRadarChart";
 import RadarChart from "./RadarChart";
 import PieChart from "./PieChart";
 import MainLayout from "./../layouts/Main.vue";
@@ -137,8 +138,12 @@ export default {
 
           /* Date range */
           this.dataMeta.startingAt = this.deathsSummary[0].starting_at;
-          this.dataMeta.endingAt = this.deathsSummary[0].ending_at; 
-  this.dataMeta.titleDateStr = ` from ${format( this.dataMeta.startingAt, "YYYY/MM/DD")} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
+          this.dataMeta.endingAt = this.deathsSummary[0].ending_at;
+
+          this.dataMeta.titleDateStr = ` from ${format(
+            this.dataMeta.startingAt,
+            "YYYY/MM/DD"
+          )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
 
           this.dataMeta.categories = [
             { name: "persons", total: 0, avg: 0, maxOneTime: 0 },
@@ -148,23 +153,39 @@ export default {
           ];
 
           /* Fatality summary by borough */
+          /*
           const chartObj1 = populateBoroughChartData(
             this.deathsSummary,
             this.dataMeta,
             boroughRadarChartConfig
           );
-          this.boroughChartData = chartObj1.chartData;
-          this.boroughChartOptions = chartObj1.chartOptions;
+          */
+
+          const titleDateStr = `from ${format(
+            this.dataMeta.startingAt,
+            "YYYY/MM/DD"
+          )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
+
+          let chartObj1 = new NyRadarChart();
+          chartObj1.labels = this.deathsSummary.map(item => item.borough);
+          chartObj1.setBoroughTotals(this.deathsSummary);
+          chartObj1.title("Fatalities by Borough " + titleDateStr);
+          this.boroughChartData = chartObj1.chartData();
+          this.boroughChartOptions = chartObj1.options;
 
           /* Max Fatalities in a single accident. By Borough */
-          const chartObj2 = populateBoroughMaxChartData(
-            this.deathsSummary,
-            this.dataMeta,
-            boroughRadarChartConfig
-          );
-          this.boroughMaxChartData = chartObj2.chartData;
-          this.boroughMaxChartOptions = chartObj2.chartOptions;
+          /* TODO: Provide details of the accident(s) with these high fatalitis */
+          let chartObj2 = new NyRadarChart();
+          chartObj2.labels = this.deathsSummary.map(item => item.borough);
+          chartObj2.setCollisionMax(this.deathsSummary);
+          chartObj1.title("Max Single Collision Fatalities " + titleDateStr);
+          this.boroughMaxChartData = chartObj2.chartData();
+          this.boroughMaxChartOptions = chartObj2.options;
+          console.count("Boro Max CData: " + toStr(this.boroughMaxChartData));
+
+
           /* Pie Chart */
+          /*
           let chartObj3 = populateTotalsCategoryChartData(
             this.deathsSummary,
             this.dataMeta,
@@ -172,6 +193,8 @@ export default {
           );
           this.totalsCategoryChartData = chartObj3.chartData;
           this.totalsCategoryChartOptions = chartObj3.chartOptions;
+          */
+
         })
         .catch(error => {
           console.log("Got an error!");
@@ -203,67 +226,6 @@ export default {
   }
 };
 
-//this.boroughChartOptions = this.boroughChartData.datasets =
-function populateBoroughChartData(
-  deathsSummary,
-  dataMeta,
-  boroughRadarChartConfig
-) {
-  /* Get Radar chart configs for Borough fatality totals */
-  const chartOptions = boroughRadarChartConfig.options;
-  chartOptions.title.text += dataMeta.titleDateStr;
-
-  const chartData = {
-    /* Labels are NYC Boroughs */
-    labels: deathsSummary.map(item => item.borough),
-    datasets: boroughRadarChartConfig.datasetConfig
-  };
-
-  console.log("labels: " + JSON.stringify(chartData.labels));
-
-  deathsSummary.forEach(boroughRec => {
-    dataMeta.categories.forEach((category, idx) => {
-      let catBoroughTot = boroughRec["tot_" + category.name + "_killed"];
-      chartData.datasets[idx].data.push(catBoroughTot);
-      dataMeta.categories[idx].total += Number(catBoroughTot);
-    });
-  });
-  return { chartOptions, chartData };
-}
-
-function populateBoroughMaxChartData(
-  deathsSummary,
-  dataMeta,
-  boroughRadarChartConfig
-) {
-  /* Get Radar chart configs for Borough MAX fatality per accident */
-  const chartOptions = boroughRadarChartConfig.options;
-  chartOptions.title.text =
-    "Max Fatalities per Accident" + dataMeta.titleDateStr;
-
-  const chartData = {
-    labels: deathsSummary.map(item => item.borough),
-    datasets: boroughRadarChartConfig.datasetConfig
-  };
-  chartData.labels = deathsSummary.map(item => item.borough);
-
-  console.log("labels: " + JSON.stringify(chartData.labels));
-
-  deathsSummary.forEach(boroughRec => {
-    dataMeta.categories.forEach((category, idx) => {
-      // "max_persons_killed_in_single_accident": "5",
-      let catBoroughMax =
-        boroughRec["max_" + category.name + "_killed_in_single_accident"];
-      chartData.datasets[idx].data.push(catBoroughMax);
-      dataMeta.categories[idx].maxOneTime =
-        Number(catBoroughMax) > dataMeta.categories[idx].maxOneTime
-          ? Number(catBoroughMax)
-          : dataMeta.categories[idx].maxOneTime;
-    });
-  });
-
-  return { chartOptions, chartData };
-}
 
 /* Get Pie Chart Configs */
 function populateTotalsCategoryChartData(
@@ -278,13 +240,15 @@ function populateTotalsCategoryChartData(
   const chartOptions = categoryPieChartConfig.options;
   chartOptions.title.text += dataMeta.titleDateStr;
 
-  chartData.datasets[0].data = dataMeta.categories
-    .slice(1)
-    .map(category => {
-      return category.total;
-    });
+  chartData.datasets[0].data = dataMeta.categories.slice(1).map(category => {
+    return category.total;
+  });
 
   return { chartOptions, chartData };
+}
+
+function toStr (obj){
+  return JSON.stringify(obj,null,2);
 }
 </script>
 

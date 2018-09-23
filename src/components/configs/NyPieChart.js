@@ -1,102 +1,53 @@
 /* 
- *  NyRadarChart
- *  Config layouts for NY Collision Data Radar Charts.
+ *  NyPieChart
+ *  Config layouts for NY Collision Data Pie Charts.
  *  See: https://www.chartjs.org/ 
  *  and: https://vue-chartjs.org/
  * 
  */
 import { nyColor } from "./Variables";
 
-const defaultDatasets = [
-  {
-    name: "persons",
-    label: "People",
-    data: [],
-    fill: false,
-    backgroundColor: nyColor.peopleBackColor,
-    borderColor: nyColor.peopleColor,
-    pointBackgroundColor: nyColor.peopleColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.peopleBackColor,
-    pointHoverBorderColor: nyColor.peopleColor,
-    pointStyle: "cross"
-  },
-  {
-    name: "pedestrians",
-    label: "Pedestrians",
-    data: [],
-    fill: false,
-    backgroundColor: nyColor.pedestrianBackColor,
-    borderColor: nyColor.pedestrianColor,
-    pointBackgroundColor: nyColor.pedestrianColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.pedestrianBackColor,
-    pointHoverBorderColor: nyColor.pedestrianColor,
-    pointStyle: "cross"
-  },
-  {
-    name: "cyclists",
-    label: "Cyclists",
-    data: [],
-    fill: "+2",
-    backgroundColor: nyColor.cyclistBackColor,
-    borderColor: nyColor.cyclistColor,
-    //borderWidth: 1,
-    pointBackgroundColor: nyColor.cyclistColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.cyclistBackColor,
-    pointHoverBorderColor: nyColor.cyclistColor,
-    pointStyle: "cross"
-  },
-  {
-    label: "Motorists",
-    name: "motorists",
-    data: [],
-    fill: "+2",
-    backgroundColor: nyColor.motoristBackColor,
-    borderColor: nyColor.motoristColor,
-    pointBackgroundColor: nyColor.motoristColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.motoristBackColor,
-    pointHoverBorderColor: nyColor.motoristColor,
-    pointStyle: "cross"
-  }
-];
-
-const defaultOptions = {
-  elements: {
-    line: { tension: 0.1, borderWidth: 2 }
-    //line: { stepped: true, borderWidth: 2 }
-  },
-  title: {
-    display: true,
-    text: "Borough Fatalities",
-    fontSize: 18,
-    lineHeight: 1.8,
-    fontColor: nyColor.fontColor
-  },
-  layout: {
-    padding: {
-      top: 1,
-      bottom: 1,
-      left: 1,
-      right: 1
+const defaultPieChartConfig = {
+  datasetConfig: [
+    {
+      data: [],
+      backgroundColor: [
+        nyColor.pedestrianColor,
+        nyColor.cyclistColor,
+        nyColor.motoristColor
+      ]
     }
-  },
-  scale: {
-    display: true
+  ],
+  options: {
+    elements: {
+      line: { tension: 0.1, borderWidth: 2 }
+    },
+    title: {
+      display: true,
+      text: "Fatalities",
+      fontSize: 18,
+      lineHeight: 1.8,
+      fontColor: "#333"
+    },
+    layout: {
+      padding: {
+        top: 5,
+        bottom: 5,
+        left: 5,
+        right: 5
+      }
+    }
   }
 };
 
-class NyRadarChart {
+class NyPieChart {
   constructor(
-    datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
-    options = defaultOptions,
-    labels = []
+    dataset = defaultPieChartConfig.dataset,
+    options = defaultPieChartConfig.options
   ) {
-    this.datasets = datasets;
-    this.options = options;
-    this.labels = labels;
+    this.dataset = JSON.parse(JSON.stringify(dataset));
+    this.options = JSON.parse(JSON.stringify(options));
+    /*
     this.categories = this.datasets.map(ds => {
       return {
         name: ds.name,
@@ -104,6 +55,7 @@ class NyRadarChart {
         maxOneTime: 0
       };
     });
+    */
   }
 
   /* Label Methods */
@@ -189,4 +141,4 @@ class NyRadarChart {
   }
 }
 
-export { NyRadarChart };
+export { NyPieChart };
