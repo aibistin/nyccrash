@@ -90,20 +90,15 @@ const defaultOptions = {
 
 class NyRadarChart {
   constructor(
+    categories,
     datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
     options = defaultOptions,
     labels = []
   ) {
+    this.categories = categories;
     this.datasets = datasets;
     this.options = options;
     this.labels = labels;
-    this.categories = this.datasets.map(ds => {
-      return {
-        name: ds.name,
-        total: 0,
-        maxOneTime: 0
-      };
-    });
   }
 
   /* Label Methods */
@@ -147,12 +142,7 @@ class NyRadarChart {
         let catBoroughMax =
           rec["max_" + ds.name + "_killed_in_single_accident"];
         const thisCat = this.categories.find(cat => cat.name === ds.name);
-        console.count(
-          `thisCat: ${thisCat.name} maxOnetime: ${thisCat.maxOneTime}`
-        );
-
         ds.data.push(catBoroughMax);
-
         /* Also get the Grand Max for each Category */
         thisCat.maxOneTime =
           Number(catBoroughMax) > thisCat.maxOneTime

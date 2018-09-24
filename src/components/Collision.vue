@@ -31,11 +31,8 @@ import axios from "axios";
 //import moment from "moment";
 import format from "date-fns/format";
 /* Local Imports*/
-import {
-  boroughRadarChartConfig,
-  categoryPieChartConfig
-} from "./configs/Config";
-import { NyRadarChart } from "./configs/NyRadarChart";
+import { NyRadarChart } from "../core/NyRadarChart";
+import { NyPieChart } from "../core/NyPieChart";
 import RadarChart from "./RadarChart";
 import PieChart from "./PieChart";
 import MainLayout from "./../layouts/Main.vue";
@@ -145,6 +142,12 @@ export default {
             "YYYY/MM/DD"
           )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
 
+          /* TODO - What to do with this */
+          /* Make this into a class to be passed to the Ny...Chart's */
+          /* Also make an object for the Borough Data, with Axios request
+             and response. Put all Classes in '/core' folder instead of 
+             "configs" folder.
+             Create tests for the Classes and Vue.js */
           this.dataMeta.categories = [
             { name: "persons", total: 0, avg: 0, maxOneTime: 0 },
             { name: "pedestrians", total: 0, avg: 0, maxOneTime: 0 },
@@ -153,20 +156,13 @@ export default {
           ];
 
           /* Fatality summary by borough */
-          /*
-          const chartObj1 = populateBoroughChartData(
-            this.deathsSummary,
-            this.dataMeta,
-            boroughRadarChartConfig
-          );
-          */
 
           const titleDateStr = `from ${format(
             this.dataMeta.startingAt,
             "YYYY/MM/DD"
           )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
 
-          let chartObj1 = new NyRadarChart();
+          let chartObj1 = new NyRadarChart(this.dataMeta.categories);
           chartObj1.labels = this.deathsSummary.map(item => item.borough);
           chartObj1.setBoroughTotals(this.deathsSummary);
           chartObj1.title("Fatalities by Borough " + titleDateStr);
@@ -175,25 +171,21 @@ export default {
 
           /* Max Fatalities in a single accident. By Borough */
           /* TODO: Provide details of the accident(s) with these high fatalitis */
-          let chartObj2 = new NyRadarChart();
+          let chartObj2 = new NyRadarChart(this.dataMeta.categories);
           chartObj2.labels = this.deathsSummary.map(item => item.borough);
           chartObj2.setCollisionMax(this.deathsSummary);
-          chartObj1.title("Max Single Collision Fatalities " + titleDateStr);
+          chartObj2.title("Max Single Collision Fatalities " + titleDateStr);
           this.boroughMaxChartData = chartObj2.chartData();
           this.boroughMaxChartOptions = chartObj2.options;
-          console.count("Boro Max CData: " + toStr(this.boroughMaxChartData));
 
+          /* Pie Chart  - Fatality Totals */
+          let chartObj3 = new NyPieChart(this.dataMeta.categories.slice(1));
+          chartObj3.labels = this.dataMeta.categories.slice(1).map(cat => cat.name);
+          chartObj3.setCategoryTotals(this.deathsSummary);
+          chartObj3.title("Total Collision Fatalities " + titleDateStr);
+          this.totalsCategoryChartData = chartObj3.chartData();
+          this.totalsCategoryChartOptions = chartObj3.options;
 
-          /* Pie Chart */
-          /*
-          let chartObj3 = populateTotalsCategoryChartData(
-            this.deathsSummary,
-            this.dataMeta,
-            categoryPieChartConfig
-          );
-          this.totalsCategoryChartData = chartObj3.chartData;
-          this.totalsCategoryChartOptions = chartObj3.chartOptions;
-          */
 
         })
         .catch(error => {
