@@ -6,6 +6,7 @@
  * 
  */
 import { nyColor } from "./Variables";
+import NyChart from "./NyChart";
 
 const defaultPieChartConfig = {
   datasets: [
@@ -40,29 +41,14 @@ const defaultPieChartConfig = {
   }
 };
 
-class NyPieChart {
+class NyPieChart extends NyChart {
   constructor(
     categories,
     datasets = defaultPieChartConfig.datasets,
     options = defaultPieChartConfig.options,
     labels = []
   ) {
-    this.categories = categories;
-    this.datasets = JSON.parse(JSON.stringify(datasets));
-    this.options = JSON.parse(JSON.stringify(options));
-    this.labels = labels;
-  }
-
-  /* Label Methods */
-  labels(newLabels) {
-    return newLabels ? (this.labels = newLabels) : this.labels;
-  }
-
-  chartData() {
-    return {
-      labels: this.labels,
-      datasets: this.datasets
-    };
+    super(categories, datasets, options, labels);
   }
 
   setCategoryTotals() {
@@ -70,25 +56,6 @@ class NyPieChart {
       //if (cat.name !== "persons") return cat.total;
       return cat.total;
     });
-  }
-
-  /* Options Methods */
-  title(newTitle) {
-    if (!newTitle) return this.options.newTitle;
-    if (typeof newTitle === "object") {
-      return (this.options.title = newTitle);
-    } else {
-      /* Hack to get around normal assumption that "title" is a string */
-      return (this.options.title.text = newTitle);
-    }
-  }
-
-  titleText(newText) {
-    return newText ? this.title(newText) : this.options.title.txt;
-  }
-
-  layout(newLayout) {
-    return newLayout ? (this.options.layout = newLayout) : this.options.layout;
   }
 }
 
