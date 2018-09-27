@@ -46,4 +46,4 @@ class NyChart {
   }
 }
 
-export { NyChart };
+export default NyChart;

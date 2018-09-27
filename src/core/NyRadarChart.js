@@ -5,6 +5,7 @@
  *  and: https://vue-chartjs.org/
  * 
  */
+import NyChart from "./NyChart";
 import { nyColor } from "./Variables";
 
 const defaultDatasets = [
@@ -65,8 +66,8 @@ const defaultDatasets = [
 
 const defaultOptions = {
   elements: {
-    line: { tension: 0.1, borderWidth: 2 }
-    //line: { stepped: true, borderWidth: 2 }
+    //line: { tension: 0.1, borderWidth: 2 }
+    line: { stepped: true, borderWidth: 2 }
   },
   title: {
     display: true,
@@ -88,36 +89,14 @@ const defaultOptions = {
   }
 };
 
-class NyRadarChart {
+class NyRadarChart extends NyChart {
   constructor(
     categories,
     datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
     options = defaultOptions,
     labels = []
   ) {
-    this.categories = categories;
-    this.datasets = datasets;
-    this.options = options;
-    this.labels = labels;
-  }
-
-  /* Label Methods */
-  labels(newLabels) {
-    return newLabels ? (this.labels = newLabels) : this.labels;
-  }
-
-  /* Dataset Methods */
-  setData(name = null, newData = []) {
-    if (!name) {
-      this.datasets.forEach(ds => (ds.data = newData));
-    } else {
-      let thisDs = this.datasets.find(ds => ds.name === name);
-      if (thisDs) {
-        thisDs.data = newData;
-      } else {
-        throw `Error: No dataset with name ${name}`;
-      }
-    }
+    super(categories, datasets, options, labels);
   }
 
   setBoroughTotals(newBoroughData) {
@@ -150,32 +129,6 @@ class NyRadarChart {
             : thisCat.maxOneTime;
       });
     });
-  }
-
-  chartData() {
-    return {
-      labels: this.labels,
-      datasets: this.datasets
-    };
-  }
-
-  /* Options Methods */
-  title(newTitle) {
-    if (!newTitle) return this.options.newTitle;
-    if (typeof newTitle === "object") {
-      return (this.options.title = newTitle);
-    } else {
-      /* Hack to get around normal assumption that "title" is a string */
-      return (this.options.title.text = newTitle);
-    }
-  }
-
-  titleText(newText) {
-    return newText ? this.title(newText) : this.options.title.txt;
-  }
-
-  layout(newLayout) {
-    return newLayout ? (this.options.layout = newLayout) : this.options.layout;
   }
 }
 

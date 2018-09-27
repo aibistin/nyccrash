@@ -186,7 +186,6 @@ export default {
           this.totalsCategoryChartData = chartObj3.chartData();
           this.totalsCategoryChartOptions = chartObj3.options;
 
-
         })
         .catch(error => {
           console.log("Got an error!");
@@ -217,27 +216,6 @@ export default {
     }
   }
 };
-
-
-/* Get Pie Chart Configs */
-function populateTotalsCategoryChartData(
-  deathsSummary,
-  dataMeta,
-  categoryPieChartConfig
-) {
-  const chartData = {
-    datasets: categoryPieChartConfig.datasetConfig
-  };
-
-  const chartOptions = categoryPieChartConfig.options;
-  chartOptions.title.text += dataMeta.titleDateStr;
-
-  chartData.datasets[0].data = dataMeta.categories.slice(1).map(category => {
-    return category.total;
-  });
-
-  return { chartOptions, chartData };
-}
 
 function toStr (obj){
   return JSON.stringify(obj,null,2);
