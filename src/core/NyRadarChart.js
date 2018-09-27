@@ -66,7 +66,6 @@ const defaultDatasets = [
 
 const defaultOptions = {
   elements: {
-    //line: { tension: 0.1, borderWidth: 2 }
     line: { stepped: true, borderWidth: 2 }
   },
   title: {

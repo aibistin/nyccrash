@@ -49,12 +49,6 @@ class NyPieChart extends NyChart {
     labels = []
   ) {
     super(categories, datasets, options, labels);
-    /*
-    this.categories = categories;
-    this.datasets = JSON.parse(JSON.stringify(datasets));
-    this.options = JSON.parse(JSON.stringify(options));
-    this.labels = labels;
-    */
   }
 
   setCategoryTotals() {
