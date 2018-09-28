@@ -13,13 +13,13 @@
           </ul> 
         </div>
         <div class="item item--1">
-          <pie-chart :data="totalsCategoryChartData" :options="totalsCategoryChartOptions"></pie-chart>
+          <pie-chart :data="fatalityTotalsBorough.chartData" :options="fatalityTotalsBorough.chartOptions"></pie-chart>
         </div>
         <div class="item item--2">
-          <radar-chart :data="boroughChartData" :options="boroughChartOptions"></radar-chart>
+          <radar-chart :data="fatalitySummaryBorough.chartData" :options="fatalitySummaryBorough.chartOptions"></radar-chart>
         </div>
         <div class="item item--3">
-          <radar-chart :data="boroughMaxChartData" :options="boroughMaxChartOptions"></radar-chart>
+          <radar-chart :data="maxFatalityByCollision.chartData" :options="maxFatalityByCollision.chartOptions"></radar-chart>
         </div>
       </div>
     </template>
@@ -65,29 +65,16 @@ export default {
   data: function() {
     return {
       collisionFatalitySummary: null,
-      categories: [],
-    //  fatalitySummary: new NyFatalitySummary(process.env.VUE_APP_NYC_APP_TOKEN),
-      dataMeta: {
-        startingAt: null,
-        endingAt: null
-      },
+      categories: Categories,
+      //  fatalitySummary: new NyFatalitySummary(process.env.VUE_APP_NYC_APP_TOKEN),
       /* By Borough - Tot Killed for each category in each borough */
-      boroughChartData: {
-        labels: [],
-        datasets: []
-      },
+      boroughChartData: {},
       boroughChartOptions: {},
       /* By Borough - Max Killed in single accident for each category in each borough */
-      boroughMaxChartData: {
-        labels: [],
-        datasets: []
-      },
+      boroughMaxChartData: {},
       boroughMaxChartOptions: {},
       /* By Category */
-      totalsCategoryChartData: {
-        labels: ["Pedestrians", "Cyclists", "Motorists"],
-        datasets: []
-      },
+      totalsCategoryChartData: {},
       totalsCategoryChartOptions: {}
     };
   },
@@ -108,15 +95,7 @@ export default {
     RadarChart,
     PieChart
   },
-  methods: {
-    /*
-   getCollisionFatalitySummary() {
-      console.log("Submitting Stuff: ", this.fatalitySummary);
-      //this.fatalitySummary.submitNycRequest("get",this);
-   }
-   */
-  },
-
+  methods: {},
   filters: {
     formatYYMMDD(inDateStr) {
       return inDateStr ? format(inDateStr, "YYYY-MM-DD") : "";

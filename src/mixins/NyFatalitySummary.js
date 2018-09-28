@@ -42,54 +42,11 @@ const NyFatalsSummary = {
           localStorage.collisionFatalitySummary = JSON.stringify(response.data);
           this.collisionFatalitySummary = response.data;
 
-          /* Date range */
-          this.dataMeta.startingAt =
-            this.collisionFatalitySummary[0].starting_at;
-          this.dataMeta.endingAt =
-            this.collisionFatalitySummary[0].ending_at;
-
           /* TODO - What to do with this */
-          /* Make this into a class to be passed to the Ny...Chart's */
-          /* Also make an object for the Borough Data, with Axios request
-             and response. Put all Classes in '/core' folder instead of 
-             "configs" folder.
-             Create tests for the Classes and Vue.js */
+          /* TODO: Provide details of the accident(s) with the highest fatalitis */
+          /* TODO - Why is PieChart called twice */
 
-          /* Fatality summary by borough */
-          this.categories = Categories;
-
-          const titleDateStr = `from ${format(
-            this.dataMeta.startingAt,
-            "YYYY/MM/DD"
-          )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
-
-          let chartObj1 = new NyRadarChart(Categories);
-          chartObj1.labels = this.collisionFatalitySummary.map(
-            item => item.borough
-          );
-          chartObj1.setBoroughTotals(this.collisionFatalitySummary);
-          chartObj1.title("Fatalities by Borough " + titleDateStr);
-          this.boroughChartData = chartObj1.chartData();
-          this.boroughChartOptions = chartObj1.options;
-
-          /* Max Fatalities in a single accident. By Borough */
-          /* TODO: Provide details of the accident(s) with these high fatalitis */
-          let chartObj2 = new NyRadarChart(Categories);
-          chartObj2.labels = this.collisionFatalitySummary.map(
-            item => item.borough
-          );
-          chartObj2.setCollisionMax(this.collisionFatalitySummary);
-          chartObj2.title("Max Single Collision Fatalities " + titleDateStr);
-          this.boroughMaxChartData = chartObj2.chartData();
-          this.boroughMaxChartOptions = chartObj2.options;
-
-          /* Pie Chart  - Fatality Totals */
-          let chartObj3 = new NyPieChart(Categories.slice(1));
-          chartObj3.labels = Categories.slice(1).map(cat => cat.name);
-          chartObj3.setCategoryTotals(this.collisionFatalitySummary);
-          chartObj3.title("Total Collision Fatalities " + titleDateStr);
-          this.totalsCategoryChartData = chartObj3.chartData();
-          this.totalsCategoryChartOptions = chartObj3.options;
+          /* Create tests for the Classes and Vue.js */
         })
         .catch(error => {
           console.log("Got an error!");
@@ -107,6 +64,58 @@ const NyFatalsSummary = {
             console.log("Error in your response logic: ", error); // Request failed
           }
         });
+    }
+  },
+  computed: {
+    /* Date range */
+    dataMeta() {
+      return {
+        startingAt: this.collisionFatalitySummary[0].starting_at,
+        endingAt: this.collisionFatalitySummary[0].ending_at
+      };
+    },
+    titleDateStr() {
+      return `from ${format(
+        this.dataMeta.startingAt,
+        "YYYY/MM/DD"
+      )} To ${format(this.dataMeta.endingAt, "YYYY/MM/DD")}`;
+    },
+    fatalityTotalsBorough() {
+      /* Pie Chart  - Fatality Totals */
+      let chart = new NyPieChart(Categories.slice(1));
+      chart.labels = Categories.slice(1).map(cat => cat.name);
+      chart.setCategoryTotals(this.collisionFatalitySummary);
+      chart.title("Total Collision Fatalities " + this.titleDateStr);
+      console.count("FatilityTotal Pie chart called!");
+      return {
+        chartData: chart.chartData(),
+        chartOPtions: chart.options
+      };
+    },
+    fatalitySummaryBorough() {
+      /* Fatality summary by borough */
+      let chart = new NyRadarChart(Categories);
+      chart.labels = this.collisionFatalitySummary.map(item => item.borough);
+      chart.setBoroughTotals(this.collisionFatalitySummary);
+      chart.title("Fatalities by Borough " + this.titleDateStr);
+      console.count("FatilitySummary Radar chart called!");
+      return {
+        chartData: chart.chartData(),
+        chartOPtions: chart.options
+      };
+    },
+    maxFatalityByCollision() {
+      /* Max Fatalities in a single collision. By Borough */
+      /* TODO: Provide details of the collision(s) with these high fatalitis */
+      let chart = new NyRadarChart(Categories);
+      chart.labels = this.collisionFatalitySummary.map(item => item.borough);
+      chart.setCollisionMax(this.collisionFatalitySummary);
+      chart.title("Max Single Collision Fatalities " + this.titleDateStr);
+      console.count("MaxFatality by Collision Radar chart called!");
+      return {
+        chartData: chart.chartData(),
+        chartOptions: chart.options
+      };
     }
   }
 };
