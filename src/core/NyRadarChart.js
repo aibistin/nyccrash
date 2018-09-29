@@ -129,6 +129,7 @@ class NyRadarChart extends NyChart {
       });
     });
   }
+
 }
 
 export { NyRadarChart };

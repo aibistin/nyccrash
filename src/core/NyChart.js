@@ -25,7 +25,9 @@ class NyChart {
       datasets: this.datasets
     };
   }
-
+  chartOptions(){
+    return this.options;
+  }
   /* Options Methods */
   title(newTitle) {
     if (!newTitle) return this.options.newTitle;
@@ -36,7 +38,6 @@ class NyChart {
       return (this.options.title.text = newTitle);
     }
   }
-
   titleText(newText) {
     return newText ? this.title(newText) : this.options.title.txt;
   }

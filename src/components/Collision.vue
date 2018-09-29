@@ -4,7 +4,7 @@
     <template v-if="collisionFatalitySummary">
       <div class="grid-container">
         <div class="item item--header">
-          <p>From {{ dataMeta.startingAt | formatYYMMDD }} to {{ dataMeta.endingAt | formatYYMMDD }}</p>
+          <p>From {{ timeRange.startingAt | formatYYMMDD }} to {{ timeRange.endingAt | formatYYMMDD }}</p>
           <ul>
             <li v-for="cat in categories">Total {{cat.name | uCaseFirst}} killed = {{ cat.total }}</li>
           </ul> 
@@ -37,8 +37,7 @@ import { NyPieChart } from "../core/NyPieChart";
 import RadarChart from "./RadarChart";
 import PieChart from "./PieChart";
 import MainLayout from "./../layouts/Main.vue";
-//import NyFatalitySummary from "../core/NyFatalitySummary";
-import NyFatalsSummary from "../mixins/NyFatalitySummary";
+import FatalitySummary from "../mixins/FatalitySummary";
 
 /*
  {
@@ -61,26 +60,17 @@ export default {
   props: {
     msg: String
   },
-  mixins: [NyFatalsSummary],
+  mixins: [FatalitySummary],
   data: function() {
     return {
       collisionFatalitySummary: null,
       categories: Categories,
-      //  fatalitySummary: new NyFatalitySummary(process.env.VUE_APP_NYC_APP_TOKEN),
-      /* By Borough - Tot Killed for each category in each borough */
-      boroughChartData: {},
-      boroughChartOptions: {},
-      /* By Borough - Max Killed in single accident for each category in each borough */
-      boroughMaxChartData: {},
-      boroughMaxChartOptions: {},
-      /* By Category */
-      totalsCategoryChartData: {},
-      totalsCategoryChartOptions: {}
     };
   },
   mounted() {
     if (!this.collisionFatalitySummary) {
       this.getCollisionFatalitySummary();
+      console.count("Mounted: Calling function that will call NYC");
     }
     /*     if (!this.collisionFatalitySummary) {
       if (localStorage.collisionFatalitySummary) {
@@ -96,6 +86,61 @@ export default {
     PieChart
   },
   methods: {},
+  computed: {
+    /* Date range */
+    timeRange() {
+      console.count("date range called!");
+      return {
+        startingAt: this.collisionFatalitySummary[0].starting_at,
+        endingAt: this.collisionFatalitySummary[0].ending_at
+      };
+    },
+    titleDateStr() {
+      console.count("Title date string called!");
+      return `from ${format(
+        this.timeRange.startingAt,
+        "YYYY/MM/DD"
+      )} To ${format(this.timeRange.endingAt, "YYYY/MM/DD")}`;
+    },
+    fatalityTotalsBorough() {
+      /* Pie Chart  - Fatality Totals */
+      let chart = new NyPieChart(Categories.slice(1));
+      chart.labels = Categories.slice(1).map(cat => cat.name);
+      chart.setCategoryTotals(this.collisionFatalitySummary);
+      chart.title("Total Collision Fatalities " + this.titleDateStr);
+      console.count("FatilityTotal Pie chart called!");
+      return {
+        chartData: chart.chartData(),
+        chartOptions: chart.chartOptions()
+      };
+    },
+    fatalitySummaryBorough() {
+      /* Fatality summary by borough */
+      let chart = new NyRadarChart(Categories);
+      chart.labels = this.collisionFatalitySummary.map(item => item.borough);
+      chart.setBoroughTotals(this.collisionFatalitySummary);
+      chart.title("Fatalities by Borough " + this.titleDateStr);
+      console.count("FatilitySummary Radar chart called!");
+      return {
+        chartData: chart.chartData(),
+        //chartOPtions: chart.options
+        chartOptions: chart.chartOptions()
+      };
+    },
+    maxFatalityByCollision() {
+      /* Max Fatalities in a single collision. By Borough */
+      /* TODO: Provide details of the collision(s) with these high fatalitis */
+      let chart = new NyRadarChart(Categories);
+      chart.labels = this.collisionFatalitySummary.map(item => item.borough);
+      chart.setCollisionMax(this.collisionFatalitySummary);
+      chart.title("Max Single Collision Fatalities " + this.titleDateStr);
+      console.count("MaxFatality by Collision Radar chart called!");
+      return {
+        chartData: chart.chartData(),
+        chartOptions: chart.chartOptions()
+      };
+    }
+  },
   filters: {
     formatYYMMDD(inDateStr) {
       return inDateStr ? format(inDateStr, "YYYY-MM-DD") : "";
