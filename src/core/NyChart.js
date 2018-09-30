@@ -25,7 +25,7 @@ class NyChart {
       datasets: this.datasets
     };
   }
-  chartOptions(){
+  chartOptions() {
     return this.options;
   }
   /* Options Methods */
@@ -44,6 +44,11 @@ class NyChart {
 
   layout(newLayout) {
     return newLayout ? (this.options.layout = newLayout) : this.options.layout;
+  }
+
+  // For simple objects only
+  cloneObj(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 }
 

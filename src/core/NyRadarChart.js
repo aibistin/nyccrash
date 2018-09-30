@@ -70,7 +70,7 @@ const defaultOptions = {
   },
   title: {
     display: true,
-    text: "Borough Fatalities",
+    text: "",
     fontSize: 18,
     lineHeight: 1.8,
     fontColor: nyColor.fontColor
@@ -92,7 +92,7 @@ class NyRadarChart extends NyChart {
   constructor(
     categories,
     datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
-    options = defaultOptions,
+    options = JSON.parse(JSON.stringify(defaultOptions)),
     labels = []
   ) {
     super(categories, datasets, options, labels);
@@ -124,12 +124,10 @@ class NyRadarChart extends NyChart {
         /* Also get the Grand Max for each Category */
         thisCat.maxOneTime =
           Number(catBoroughMax) > thisCat.maxOneTime
-            ? Number(catBoroughMax)
-            : thisCat.maxOneTime;
+            ? Number(catBoroughMax) : thisCat.maxOneTime;
       });
     });
   }
-
 }
 
 export { NyRadarChart };

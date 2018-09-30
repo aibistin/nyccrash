@@ -4,7 +4,8 @@
  * 
  */
 
-const Categories = [
+const Categories = {
+  categories: [
   {
     name: "persons",
     total: 0,
@@ -29,6 +30,11 @@ const Categories = [
     avg: 0,
     maxOneTime: 0
   }
-];
+],
+  clone() {
+    return JSON.parse(JSON.stringify(this.categories));
+  }
+}
+;
 
 export default Categories;

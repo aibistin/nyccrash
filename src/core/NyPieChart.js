@@ -25,7 +25,7 @@ const defaultPieChartConfig = {
     },
     title: {
       display: true,
-      text: "Fatalities",
+      text: "",
       fontSize: 18,
       lineHeight: 1.8,
       fontColor: "#333"
@@ -44,8 +44,8 @@ const defaultPieChartConfig = {
 class NyPieChart extends NyChart {
   constructor(
     categories,
-    datasets = defaultPieChartConfig.datasets,
-    options = defaultPieChartConfig.options,
+    datasets = JSON.parse(JSON.stringify(defaultPieChartConfig.datasets)),
+    options = JSON.parse(JSON.stringify(defaultPieChartConfig.options)),
     labels = []
   ) {
     super(categories, datasets, options, labels);
@@ -53,7 +53,6 @@ class NyPieChart extends NyChart {
 
   setCategoryTotals() {
     this.datasets[0].data = this.categories.map(cat => {
-      //if (cat.name !== "persons") return cat.total;
       return cat.total;
     });
   }
