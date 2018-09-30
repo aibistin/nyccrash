@@ -134,7 +134,7 @@ export default {
     /*TODO Use Different component */
     fatalityYearly() {
       /* Bar Chart - Yearly fatalities */
-      let chart = new NyBarChart(this.categories,this.boroughs);
+      let chart = new NyBarChart(this.categories, this.boroughs);
       let yearSave = null;
       /*TODO put onto NyBarChart */
       /*
@@ -151,10 +151,10 @@ export default {
         console.count("Yearly totals Bar chart called!");
         chart.setYearlyTotals(this.fatalitySummaryYearly);
         chart.title("Yearly fatalities " + this.titleDateStr);
-      return {
-        chartData: chart.chartData(),
-        chartOptions: chart.chartOptions()
-      };
+        return {
+          chartData: chart.chartData(),
+          chartOptions: chart.chartOptions()
+        };
       }
       return null;
     }

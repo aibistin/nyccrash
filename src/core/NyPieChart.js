@@ -6,16 +6,16 @@
  * 
  */
 import NyChart from "./NyChart";
-import { nyColor } from "./Variables";
+import { chartColors } from "./Variables";
 
 const defaultPieChartConfig = {
   datasets: [
     {
       data: [],
       backgroundColor: [
-        nyColor.pedestrianColor,
-        nyColor.cyclistColor,
-        nyColor.motoristColor
+        chartColors.pedestrians.color,
+        chartColors.cyclists.color,
+        chartColors.motorists.color
       ]
     }
   ],

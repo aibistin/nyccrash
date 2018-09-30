@@ -6,7 +6,7 @@
  * 
  */
 import NyChart from "./NyChart";
-import { nyColor } from "./Variables";
+import { chartColors } from "./Variables";
 
 const defaultDatasets = [
   {
@@ -14,12 +14,12 @@ const defaultDatasets = [
     label: "People",
     data: [],
     fill: false,
-    backgroundColor: nyColor.peopleBackColor,
-    borderColor: nyColor.peopleColor,
-    pointBackgroundColor: nyColor.peopleColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.peopleBackColor,
-    pointHoverBorderColor: nyColor.peopleColor,
+    backgroundColor: chartColors.persons.colorBackground,
+    borderColor: chartColors.persons.color,
+    pointBackgroundColor: chartColors.persons.color,
+    pointBorderColor: chartColors.pointBorderColor,
+    pointHoverBackgroundColor: chartColors.persons.colorBackground,
+    pointHoverBorderColor: chartColors.persons.color,
     pointStyle: "cross"
   },
   {
@@ -27,12 +27,12 @@ const defaultDatasets = [
     label: "Pedestrians",
     data: [],
     fill: false,
-    backgroundColor: nyColor.pedestrianBackColor,
-    borderColor: nyColor.pedestrianColor,
-    pointBackgroundColor: nyColor.pedestrianColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.pedestrianBackColor,
-    pointHoverBorderColor: nyColor.pedestrianColor,
+    backgroundColor: chartColors.pedestrians.colorBackground,
+    borderColor: chartColors.pedestrians.color,
+    pointBackgroundColor: chartColors.pedestrians.colorBackground,
+    pointBorderColor: chartColors.pointBorderColor,
+    pointHoverBackgroundColor: chartColors.pedestrians.colorBackground,
+    pointHoverBorderColor: chartColors.pedestrians.color,
     pointStyle: "cross"
   },
   {
@@ -40,13 +40,13 @@ const defaultDatasets = [
     label: "Cyclists",
     data: [],
     fill: "+2",
-    backgroundColor: nyColor.cyclistBackColor,
-    borderColor: nyColor.cyclistColor,
+    backgroundColor: chartColors.cyclists.colorBackground,
+    borderColor: chartColors.cyclists.color,
     //borderWidth: 1,
-    pointBackgroundColor: nyColor.cyclistColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.cyclistBackColor,
-    pointHoverBorderColor: nyColor.cyclistColor,
+    pointBackgroundColor: chartColors.cyclists.color,
+    pointBorderColor: chartColors.pointBorderColor,
+    pointHoverBackgroundColor: chartColors.cyclists.colorBackground,
+    pointHoverBorderColor: chartColors.cyclists.color,
     pointStyle: "cross"
   },
   {
@@ -54,12 +54,12 @@ const defaultDatasets = [
     name: "motorists",
     data: [],
     fill: "+2",
-    backgroundColor: nyColor.motoristBackColor,
-    borderColor: nyColor.motoristColor,
-    pointBackgroundColor: nyColor.motoristColor,
-    pointBorderColor: nyColor.pointBorderColor,
-    pointHoverBackgroundColor: nyColor.motoristBackColor,
-    pointHoverBorderColor: nyColor.motoristColor,
+    backgroundColor: chartColors.motorists.colorBackground,
+    borderColor: chartColors.motorists.colorBackground,
+    pointBackgroundColor: chartColors.motorists.color,
+    pointBorderColor: chartColors.pointBorderColor,
+    pointHoverBackgroundColor: chartColors.motorists.colorBackground,
+    pointHoverBorderColor: chartColors.motorists.color,
     pointStyle: "cross"
   }
 ];
@@ -73,7 +73,7 @@ const defaultOptions = {
     text: "",
     fontSize: 18,
     lineHeight: 1.8,
-    fontColor: nyColor.fontColor
+    fontColor: chartColors.fontColor
   },
   layout: {
     padding: {
@@ -124,7 +124,8 @@ class NyRadarChart extends NyChart {
         /* Also get the Grand Max for each Category */
         thisCat.maxOneTime =
           Number(catBoroughMax) > thisCat.maxOneTime
-            ? Number(catBoroughMax) : thisCat.maxOneTime;
+            ? Number(catBoroughMax)
+            : thisCat.maxOneTime;
       });
     });
   }

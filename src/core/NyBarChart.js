@@ -6,103 +6,42 @@
  * 
  */
 import NyChart from "./NyChart";
-import { nyColor } from "./Variables";
+import { chartColors } from "./Variables";
 
 const defaultDatasets = [
   {
     name: "persons",
     label: "People",
     data: [],
-    backgroundColor: [
-      nyColor.peopleBackColor,
-      nyColor.peopleBackColor,
-      nyColor.peopleBackColor,
-      nyColor.peopleBackColor,
-      nyColor.peopleBackColor,
-      nyColor.peopleBackColor,
-      nyColor.peopleBackColor
-    ],
-    borderColor: [
-      nyColor.peopleColor,
-      nyColor.peopleColor,
-      nyColor.peopleColor,
-      nyColor.peopleColor,
-      nyColor.peopleColor,
-      nyColor.peopleColor,
-      nyColor.peopleColor
-    ],
+    backgroundColor: [],
+    borderColor: [],
     borderWidth: 1
   },
   {
     name: "pedestrians",
     label: "Pedestrians",
+    stack: "people",
     data: [],
-    backgroundColor: [
-      nyColor.pedestrianBackColor,
-      nyColor.pedestrianBackColor,
-      nyColor.pedestrianBackColor,
-      nyColor.pedestrianBackColor,
-      nyColor.pedestrianBackColor,
-      nyColor.pedestrianBackColor,
-      nyColor.pedestrianBackColor
-    ],
-    borderColor: [
-      nyColor.pedestrianColor,
-      nyColor.pedestrianColor,
-      nyColor.pedestrianColor,
-      nyColor.pedestrianColor,
-      nyColor.pedestrianColor,
-      nyColor.pedestrianColor,
-      nyColor.pedestrianColor
-    ],
+    backgroundColor: [],
+    borderColor: [],
     borderWidth: 1
   },
   {
     name: "cyclists",
     label: "Cyclists",
+    stack: "people",
     data: [],
-    backgroundColor: [
-      nyColor.cyclistBackColor,
-      nyColor.cyclistBackColor,
-      nyColor.cyclistBackColor,
-      nyColor.cyclistBackColor,
-      nyColor.cyclistBackColor,
-      nyColor.cyclistBackColor,
-      nyColor.cyclistBackColor
-    ],
-    borderColor: [
-      nyColor.cyclistColor,
-      nyColor.cyclistColor,
-      nyColor.cyclistColor,
-      nyColor.cyclistColor,
-      nyColor.cyclistColor,
-      nyColor.cyclistColor,
-      nyColor.cyclistColor
-    ],
+    backgroundColor: [],
+    borderColor: [],
     borderWidth: 1
   },
   {
     label: "Motorists",
     name: "motorists",
+    stack: "people",
     data: [],
-    backgroundColor: [
-      nyColor.motoristBackColor,
-      nyColor.motoristBackColor,
-      nyColor.motoristBackColor,
-      nyColor.motoristBackColor,
-      nyColor.motoristBackColor,
-      nyColor.motoristBackColor,
-      nyColor.motoristBackColor
-    ],
-    borderColor: [
-      nyColor.motoristColor,
-      nyColor.motoristColor,
-      nyColor.motoristColor,
-      nyColor.motoristColor,
-      nyColor.motoristColor,
-      nyColor.motoristColor,
-      nyColor.motoristColor
-    ],
+    backgroundColor: [],
+    borderColor: [],
     borderWidth: 1
   }
 ];
@@ -118,7 +57,7 @@ const defaultOptions = {
     text: "",
     fontSize: 18,
     lineHeight: 1.8,
-    fontColor: nyColor.fontColor
+    fontColor: chartColors.fontColor
   },
   layout: {
     padding: {
@@ -127,6 +66,24 @@ const defaultOptions = {
       left: 1,
       right: 1
     }
+  },
+  scales: {
+    xAxes: [
+      {
+        stacked: true,
+        ticks: {
+          beginAtZero: true
+        }
+      }
+    ],
+    yAxes: [
+      {
+        stacked: true,
+        ticks: {
+          beginAtZero: true
+        }
+      }
+    ]
   }
 };
 
@@ -148,10 +105,8 @@ class NyBarChart extends NyChart {
     let fatalityTotals = {};
     console.count("Set yearly totals with record ct: " + yearlyRecords.length);
     yearlyRecords.map(rec => {
-      console.count(`Working on year ${rec.year}`);
       if (!yearSave || rec.year !== yearSave) {
-        if (yearSave)
-          this.yearlyTotals.push(this.cloneObj(fatalityTotals));
+        if (yearSave) this.yearlyTotals.push(this.cloneObj(fatalityTotals));
         yearSave = rec.year;
         this.categories.forEach(cat => (fatalityTotals[cat.name] = 0));
       }
@@ -159,16 +114,16 @@ class NyBarChart extends NyChart {
         fatalityTotals[cat.name] += Number(rec["tot_" + cat.name + "_killed"]);
       });
     });
-    if (yearSave)
-      this.yearlyTotals.push(this.cloneObj(fatalityTotals));
+    if (yearSave) this.yearlyTotals.push(this.cloneObj(fatalityTotals));
     /* Store yearly totals for each category */
     this.yearlyTotals.map(tots => {
-      this.datasets[0].data.push(tots["persons"]);
-      this.datasets[1].data.push(tots["pedestrians"]);
-      this.datasets[2].data.push(tots["cyclists"]);
-      this.datasets[3].data.push(tots["motorists"]);
+      this.datasets.forEach(ds => {
+        ds.data.push(tots[ds.name]);
+        ds.backgroundColor.push(chartColors[ds.name].colorBackground);
+        ds.borderColor.push(chartColors[ds.name].color);
+      });
+      /*TODO push the colors for each year/category */
     });
-    console.count("Datasets 0: " + toStr(this.datasets[0]));
   }
 }
 export { NyBarChart };
