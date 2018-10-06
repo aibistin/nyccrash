@@ -9,7 +9,6 @@ import Home from "./components/Home.vue";
 
 Vue.config.productionTip = false;
 
-//new Vue({
 const app = new Vue({
   el: "#app",
   data: {
@@ -36,9 +35,6 @@ const app = new Vue({
     return h(this.VueComponent);
   }
 });
-//}).$mount("#app");
-
-//  render: h => h(App)
 
 window.addEventListener("popstate", () => {
   app.currentRoute = window.location.pathname;
