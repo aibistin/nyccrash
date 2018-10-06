@@ -1,31 +1,30 @@
 <template>
   <main-layout>
-    <section class="hero is-light is-small is-bold">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title">New York City Collision Fatalities</h1>
-          <template v-if="fatalitySummary">
-              <h2 class="subtitle">From {{ timeRange.startingAt | formatYYMMDD }} to {{ timeRange.endingAt | formatYYMMDD }}</h2>
-          </template>
-        </div>
-      </div>
-    </section>
     <h1>{{ msg }}</h1>
     <template v-if="fatalitySummary">
       <div class="grid-container">
-        <div class="item item--header">
-          <ul class="notification is-medium is-warning">
+
+        <template v-if="fatalitySummary">
+          <div class="item item--header notification is-light">
+            <h3 class="subtitle is-3">Collision Fatalities From {{ timeRange.startingAt | formatYYMMDD }} to {{ timeRange.endingAt | formatYYMMDD }}</h3>
+          </div>
+        </template>
+
+        <div class="item item--1-1">
+          <ul class="">
             <li v-for="cat in categories" class="" >Total {{cat.name | uCaseFirst}} killed, {{ cat.total }}</li>
           </ul> 
         </div>
+        <div class="item item--1-2">
+          <pie-chart :data="fatalityTotalsBorough.chartData" :options="fatalityTotalsBorough.chartOptions"></pie-chart>
+        </div>
+
         <template v-if="fatalitySummaryYearly">
-          <div class="item item--1">
+          <div class="item item--2">
             <bar-chart :data="fatalityYearly.chartData" :options="fatalityYearly.chartOptions"></bar-chart>
           </div>
         </template>
-        <div class="item item--2">
-          <pie-chart :data="fatalityTotalsBorough.chartData" :options="fatalityTotalsBorough.chartOptions"></pie-chart>
-        </div>
+
         <div class="item item--3">
           <radar-chart :data="fatalitySummaryBorough.chartData" :options="fatalitySummaryBorough.chartOptions"></radar-chart>
         </div>
@@ -143,7 +142,7 @@ export default {
         chartOptions: chart.chartOptions()
       };
     },
-    /*TODO Use Different component */
+    /*TODO Use seperate component */
     fatalityYearly() {
       /* Bar Chart - Yearly fatalities */
       let chart = new NyBarChart(this.categories, this.boroughs);
@@ -166,7 +165,7 @@ export default {
   },
   filters: {
     formatYYMMDD(inDateStr) {
-      return inDateStr ? format(inDateStr, "YYYY-MM-DD") : "";
+      return inDateStr ? format(inDateStr, "YYYY/MM/DD") : "";
     },
     uCaseFirst(inStr) {
       return (
@@ -188,7 +187,7 @@ function toStr(obj) {
   display: grid;
   height: 100%;
   grid-template-columns: repeat(2, minmax(max-content, 1fr));
-  grid-auto-rows: minmax(min-content, 1fr);
+  grid-auto-rows: minmax(1fr, 1fr);
   grid-gap: 2rem;
 }
 
@@ -203,18 +202,25 @@ function toStr(obj) {
     grid-column-end: 3;*/
     /*
   align-self: center;
-  justify-self: center;
   */
 
   grid-row: 1;
   grid-column: 1 / -1;
   align-self: center;
+  justify-self: center;
 }
-.item--1 {
+
+.item--1-1 {
   align-self: center;
   justify-self: center;
   grid-row: 2 / 3;
-  grid-column: 1 / -1;
+  grid-column: 1 / 2;
+}
+.item--1-2 {
+  align-self: center;
+  justify-self: center;
+  grid-row: 2 / 3;
+  grid-column: 2 / -1;
 }
 
 .item--2 {
