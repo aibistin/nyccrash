@@ -1,15 +1,15 @@
 /* Express Server App for launching on Heroku */
-const express = require("express");
+import express, { static } from "express";
 //var path = require ('path');
 /* Heroku usually supplies a port # */
 const port = process.env.PORT || 8080;
 const app = express();
 
-app.use(express.static(__dirname + "/dist/"));
+app.use(static(__dirname + "/dist/"));
 
 /* Capture all routes */
 app.get(/.*/, function(req, resp) {
-  res.sendfile(__dirname + "/dist/index.html");
+  resp.sendfile(__dirname + "/dist/index.html");
 });
 
 app.listen(port);
