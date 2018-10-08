@@ -7,8 +7,8 @@
  */
 
 class NyChart {
-  constructor(categories, datasets, options, labels) {
-    this.categories = categories;
+  constructor(Categories, datasets, options, labels) {
+    this.Categories = Categories;
     this.datasets = datasets;
     this.options = options;
     this.labels = labels;
@@ -25,9 +25,11 @@ class NyChart {
       datasets: this.datasets
     };
   }
+
   chartOptions() {
     return this.options;
   }
+
   /* Options Methods */
   title(newTitle) {
     if (!newTitle) return this.options.newTitle;
@@ -38,6 +40,7 @@ class NyChart {
       return (this.options.title.text = newTitle);
     }
   }
+
   titleText(newText) {
     return newText ? this.title(newText) : this.options.title.txt;
   }

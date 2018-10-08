@@ -12,24 +12,43 @@
 
         <div class="item item--1-1">
           <ul class="">
-            <li v-for="cat in categories" class="" >Total {{cat.name | uCaseFirst}} killed, {{ cat.total }}</li>
+            <li v-for="cat in Categories.categories" class="" >Total {{cat.name | uCaseFirst}} killed, {{ cat.total }}</li>
           </ul> 
         </div>
         <div class="item item--1-2">
-          <pie-chart :data="fatalityTotalsBorough.chartData" :options="fatalityTotalsBorough.chartOptions"></pie-chart>
+          <pie-chart 
+              :data="fatalityTotalsBorough.chartData" 
+              :options="fatalityTotalsBorough.chartOptions" 
+              ></pie-chart>
         </div>
 
         <template v-if="fatalitySummaryYearly">
           <div class="item item--2">
-            <bar-chart :data="fatalityYearly.chartData" :options="fatalityYearly.chartOptions"></bar-chart>
+            <bar-chart 
+              :data="fatalityYearly.chartData"
+              :options="fatalityYearly.chartOptions"
+              :height="600"
+              :width="800"
+             ></bar-chart>
           </div>
         </template>
 
         <div class="item item--3">
-          <radar-chart :data="fatalitySummaryBorough.chartData" :options="fatalitySummaryBorough.chartOptions"></radar-chart>
+          <radar-chart 
+          :data="fatalitySummaryBorough.chartData"
+          :options="fatalitySummaryBorough.chartOptions"
+          :height="700"
+          :width="700"
+          ></radar-chart>
         </div>
+
         <div class="item item--4">
-          <radar-chart :data="maxFatalityByCollision.chartData" :options="maxFatalityByCollision.chartOptions"></radar-chart>
+          <radar-chart 
+            :data="maxFatalityByCollision.chartData"
+            :options="maxFatalityByCollision.chartOptions"
+            :height="700"
+            :width="700"
+            ></radar-chart>
         </div>
       </div>
     </template>
@@ -62,25 +81,21 @@ export default {
     return {
       fatalitySummary: null,
       fatalitySummaryYearly: null,
-      categories: Categories.clone(),
+      Categories: new Categories,
       boroughs: Boroughs.clone()
     };
   },
   mounted() {
     if (localStorage.fatalitySummary) {
-      console.count("FS in local storage");
       this.fatalitySummary = JSON.parse(localStorage.fatalitySummary);
     } else {
-      console.count("FS not in local storage, calling NYC");
       this.getCollisionFatalitySummary();
     }
     if (localStorage.fatalitySummaryYearly) {
-      console.count("FSY in local storage");
       this.fatalitySummaryYearly = JSON.parse(
         localStorage.fatalitySummaryYearly
       );
     } else {
-      console.count("FSY not in local storage, calling NYC");
       this.getCollisionFatalitySummary({ groupByYear: true });
     }
   },
@@ -107,8 +122,7 @@ export default {
     },
     fatalityTotalsBorough() {
       /* Pie Chart  - Fatality Totals */
-      let chart = new NyPieChart(this.categories.slice(1));
-      chart.labels = this.categories.slice(1).map(cat => cat.name);
+      let chart = new NyPieChart(this.Categories);
       chart.setCategoryTotals(this.fatalitySummary);
       chart.title("Total Collision Fatalities " + this.titleDateStr);
       console.count("FatilityTotal Pie chart called!");
@@ -119,11 +133,10 @@ export default {
     },
     fatalitySummaryBorough() {
       /* Fatality summary by borough */
-      let chart = new NyRadarChart(this.categories);
+      let chart = new NyRadarChart(this.Categories);
       chart.labels = this.fatalitySummary.map(item => item.borough);
       chart.setBoroughTotals(this.fatalitySummary);
       chart.title("Fatalities by Borough " + this.titleDateStr);
-      console.count("FatilitySummary Radar chart called!");
       return {
         chartData: chart.chartData(),
         chartOptions: chart.chartOptions()
@@ -132,11 +145,10 @@ export default {
     maxFatalityByCollision() {
       /* Max Fatalities in a single collision. By Borough */
       /* TODO: Provide details of the collision(s) with these high fatalitis */
-      let chart = new NyRadarChart(this.categories);
+      let chart = new NyRadarChart(this.Categories);
       chart.labels = this.fatalitySummary.map(item => item.borough);
       chart.setCollisionMax(this.fatalitySummary);
       chart.title("Max Single Collision Fatalities " + this.titleDateStr);
-      console.count("MaxFatality by Collision Radar chart called!");
       return {
         chartData: chart.chartData(),
         chartOptions: chart.chartOptions()
@@ -145,7 +157,7 @@ export default {
     /*TODO Use seperate component */
     fatalityYearly() {
       /* Bar Chart - Yearly fatalities */
-      let chart = new NyBarChart(this.categories, this.boroughs);
+      let chart = new NyBarChart(this.Categories, this.boroughs);
       /*TODO put onto NyBarChart */
       chart.labels = this.fatalitySummaryYearly.reduce((years, item) => {
         if (!years.length || item.year !== years[years.length - 1]) {
@@ -154,7 +166,6 @@ export default {
         return years;
       }, []);
 
-      console.count("Yearly totals Bar chart called!");
       chart.setYearlyTotals(this.fatalitySummaryYearly);
       chart.title("Yearly fatalities " + this.titleDateStr);
       return {
@@ -186,7 +197,7 @@ function toStr(obj) {
   box-sizing: border-box;
   display: grid;
   height: 100%;
-  grid-template-columns: repeat(2, minmax(max-content, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: minmax(1fr, 1fr);
   grid-gap: 2rem;
 }

@@ -12,11 +12,7 @@ const defaultPieChartConfig = {
   datasets: [
     {
       data: [],
-      backgroundColor: [
-        chartColors.pedestrians.color,
-        chartColors.cyclists.color,
-        chartColors.motorists.color
-      ]
+      backgroundColor: []
     }
   ],
   options: {
@@ -43,17 +39,27 @@ const defaultPieChartConfig = {
 
 class NyPieChart extends NyChart {
   constructor(
-    categories,
+    Categories,
     datasets = JSON.parse(JSON.stringify(defaultPieChartConfig.datasets)),
     options = JSON.parse(JSON.stringify(defaultPieChartConfig.options)),
     labels = []
   ) {
-    super(categories, datasets, options, labels);
+    super(Categories, datasets, options, labels);
+    this._setChartColors();
+    this.labels = labels.length ? labels : this.setLabels();
   }
 
   setCategoryTotals() {
-    this.datasets[0].data = this.categories.map(cat => {
-      return cat.total;
+    this.datasets[0].data = this.Categories.getTotals().slice(1);
+  }
+
+  setLabels() {
+    return (this.labels = this.Categories.getLabels().slice(1));
+  }
+
+  _setChartColors() {
+    this.Categories.names.slice(1).forEach(name => {
+      this.datasets[0].backgroundColor.push(chartColors[name].color);
     });
   }
 }

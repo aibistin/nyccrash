@@ -89,13 +89,13 @@ const defaultOptions = {
 
 class NyBarChart extends NyChart {
   constructor(
-    categories,
+    Categories,
     boroughs,
     datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
     options = JSON.parse(JSON.stringify(defaultOptions)),
     labels = []
   ) {
-    super(categories, datasets, options, labels);
+    super(Categories, datasets, options, labels);
     this.yearlyTotals = [];
     this.boroughs = boroughs;
   }
@@ -103,20 +103,19 @@ class NyBarChart extends NyChart {
   setYearlyTotals(yearlyRecords) {
     let yearSave = null;
     let fatalityTotals = {};
-    console.count("Set yearly totals with record ct: " + yearlyRecords.length);
     yearlyRecords.map(rec => {
       if (!yearSave || rec.year !== yearSave) {
         if (yearSave) this.yearlyTotals.push(this.cloneObj(fatalityTotals));
         yearSave = rec.year;
-        this.categories.forEach(cat => (fatalityTotals[cat.name] = 0));
+        this.Categories.names.forEach(catName => (fatalityTotals[catName] = 0));
       }
-      this.categories.forEach(cat => {
-        fatalityTotals[cat.name] += Number(rec["tot_" + cat.name + "_killed"]);
+      this.Categories.names.forEach(catName => {
+        fatalityTotals[catName] += Number(rec["tot_" + catName + "_killed"]);
       });
     });
     if (yearSave) this.yearlyTotals.push(this.cloneObj(fatalityTotals));
     /* Store yearly totals for each category */
-    this.yearlyTotals.map(tots => {
+    this.yearlyTotals.forEach(tots => {
       this.datasets.forEach(ds => {
         ds.data.push(tots[ds.name]);
         ds.backgroundColor.push(chartColors[ds.name].colorBackground);

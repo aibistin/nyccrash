@@ -20,53 +20,59 @@ const defaultDatasets = [
     pointBorderColor: chartColors.pointBorderColor,
     pointHoverBackgroundColor: chartColors.persons.colorBackground,
     pointHoverBorderColor: chartColors.persons.color,
-    pointStyle: "cross"
+    pointStyle: "circle"
   },
   {
     name: "pedestrians",
     label: "Pedestrians",
     data: [],
-    fill: false,
+    fill: "origin",
     backgroundColor: chartColors.pedestrians.colorBackground,
     borderColor: chartColors.pedestrians.color,
     pointBackgroundColor: chartColors.pedestrians.colorBackground,
     pointBorderColor: chartColors.pointBorderColor,
     pointHoverBackgroundColor: chartColors.pedestrians.colorBackground,
     pointHoverBorderColor: chartColors.pedestrians.color,
-    pointStyle: "cross"
+    pointStyle: "circle"
   },
   {
     name: "cyclists",
     label: "Cyclists",
     data: [],
-    fill: "+2",
+    fill: "origin",
     backgroundColor: chartColors.cyclists.colorBackground,
     borderColor: chartColors.cyclists.color,
-    //borderWidth: 1,
+    borderWidth: 2,
     pointBackgroundColor: chartColors.cyclists.color,
     pointBorderColor: chartColors.pointBorderColor,
     pointHoverBackgroundColor: chartColors.cyclists.colorBackground,
     pointHoverBorderColor: chartColors.cyclists.color,
-    pointStyle: "cross"
+    pointStyle: "circle"
   },
   {
     label: "Motorists",
     name: "motorists",
     data: [],
-    fill: "+2",
+    fill: "origin",
     backgroundColor: chartColors.motorists.colorBackground,
     borderColor: chartColors.motorists.colorBackground,
     pointBackgroundColor: chartColors.motorists.color,
     pointBorderColor: chartColors.pointBorderColor,
     pointHoverBackgroundColor: chartColors.motorists.colorBackground,
     pointHoverBorderColor: chartColors.motorists.color,
-    pointStyle: "cross"
+    pointStyle: "circle"
   }
 ];
 
 const defaultOptions = {
+  responsive: false,
+  maintainAspectRatio: false,
   elements: {
-    line: { stepped: true, borderWidth: 2 }
+    line: {
+      tension: 0.1,
+    //  stepped: true,
+      borderWidth: 1,
+    }
   },
   title: {
     display: true,
@@ -77,7 +83,7 @@ const defaultOptions = {
   },
   layout: {
     padding: {
-      top: 1,
+      top: 4,
       bottom: 1,
       left: 1,
       right: 1
@@ -90,12 +96,12 @@ const defaultOptions = {
 
 class NyRadarChart extends NyChart {
   constructor(
-    categories,
+    Categories,
     datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
     options = JSON.parse(JSON.stringify(defaultOptions)),
     labels = []
   ) {
-    super(categories, datasets, options, labels);
+    super(Categories, datasets, options, labels);
   }
 
   setBoroughTotals(newBoroughData) {
@@ -103,7 +109,8 @@ class NyRadarChart extends NyChart {
       this.datasets.forEach(ds => {
         let catBoroughTot = rec["tot_" + ds.name + "_killed"];
         ds.data.push(catBoroughTot);
-        const thisCat = this.categories.find(cat => cat.name === ds.name);
+        //const thisCat = this.Categories.find(cat => cat.name === ds.name);
+        const thisCat = this.Categories.getCat(ds.name);
         if (thisCat) {
           thisCat.total += Number(catBoroughTot);
         } else {
@@ -119,7 +126,8 @@ class NyRadarChart extends NyChart {
         // "max_persons_killed_in_single_accident": "5",
         let catBoroughMax =
           rec["max_" + ds.name + "_killed_in_single_accident"];
-        const thisCat = this.categories.find(cat => cat.name === ds.name);
+        //const thisCat = this.Categories.find(cat => cat.name === ds.name);
+        const thisCat = this.Categories.getCat(ds.name);
         ds.data.push(catBoroughMax);
         /* Also get the Grand Max for each Category */
         thisCat.maxOneTime =
