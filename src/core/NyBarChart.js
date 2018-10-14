@@ -8,44 +8,6 @@
 import NyChart from "./NyChart";
 import { chartColors } from "./Variables";
 
-const defaultDatasets = [
-  {
-    name: "persons",
-    label: "People",
-    data: [],
-    backgroundColor: [],
-    borderColor: [],
-    borderWidth: 1
-  },
-  {
-    name: "pedestrians",
-    label: "Pedestrians",
-    stack: "people",
-    data: [],
-    backgroundColor: [],
-    borderColor: [],
-    borderWidth: 1
-  },
-  {
-    name: "cyclists",
-    label: "Cyclists",
-    stack: "people",
-    data: [],
-    backgroundColor: [],
-    borderColor: [],
-    borderWidth: 1
-  },
-  {
-    label: "Motorists",
-    name: "motorists",
-    stack: "people",
-    data: [],
-    backgroundColor: [],
-    borderColor: [],
-    borderWidth: 1
-  }
-];
-
 const defaultOptions = {
   /*
   elements: {
@@ -88,19 +50,17 @@ const defaultOptions = {
 };
 
 class NyBarChart extends NyChart {
-  constructor(
-    Categories,
-    boroughs,
-    datasets = defaultDatasets.map(ds => JSON.parse(JSON.stringify(ds))),
-    options = JSON.parse(JSON.stringify(defaultOptions)),
-    labels = []
-  ) {
-    super(Categories, datasets, options, labels);
+  constructor(Categories, stackOn, labels = []) {
+    super(Categories);
+    this.stackOn = this.Categories.getCat(stackOn) ? stackOn : "persons";
+    this.labels = labels;
+    this.datasets = [];
+    this.options = JSON.parse(JSON.stringify(defaultOptions));
     this.yearlyTotals = [];
-    this.boroughs = boroughs;
+    this._initDatasets();
   }
 
-  setYearlyTotals(yearlyRecords) {
+  populateYearlyTotals(yearlyRecords) {
     let yearSave = null;
     let fatalityTotals = {};
     yearlyRecords.map(rec => {
@@ -118,16 +78,30 @@ class NyBarChart extends NyChart {
     this.yearlyTotals.forEach(tots => {
       this.datasets.forEach(ds => {
         ds.data.push(tots[ds.name]);
-        ds.backgroundColor.push(chartColors[ds.name].colorBackground);
-        ds.borderColor.push(chartColors[ds.name].color);
       });
-      /*TODO push the colors for each year/category */
+    });
+  }
+
+  _initDatasets() {
+    this.Categories.categories.forEach((cat, idx) => {
+      this.datasets[idx] = {
+        name: cat.name,
+        label: cat.label,
+        data: [],
+        backgroundColor: [],
+        borderColor: [],
+        borderWidth: 3
+      };
+
+      this.labels.forEach(label => {
+        this.datasets[idx].backgroundColor.push(
+          chartColors[cat.name].colorBackground
+        );
+        if (this.datasets[idx].name !== this.stackOn)
+          this.datasets[idx].stack = this.stackOn;
+        this.datasets[idx].borderColor.push(chartColors[cat.name].colorBorder);
+      });
     });
   }
 }
 export { NyBarChart };
-
-/* For Debugging */
-function toStr(obj) {
-  return JSON.stringify(obj, null, 2);
-}

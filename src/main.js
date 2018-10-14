@@ -3,8 +3,7 @@ import Vue from "vue";
 import Bulma from "bulma";
 /* Local Imports */
 import routes from "./routes";
-//import App from "./App.vue";
-import Collision from "./components/Collision.vue";
+import Summary from "./components/Summary.vue";
 import Home from "./components/Home.vue";
 
 Vue.config.productionTip = false;
@@ -15,12 +14,11 @@ const app = new Vue({
     currentRoute: window.location.pathname
   },
   components: {
-    Collision,
+    Summary,
     Home
   },
   computed: {
     VueComponent() {
-      console.log("Current route: " + this.currentRoute);
       const routeComponent = routes[this.currentRoute];
       if (routeComponent) {
         console.log("Component: " + routeComponent);

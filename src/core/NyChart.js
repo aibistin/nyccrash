@@ -49,6 +49,10 @@ class NyChart {
     return newLayout ? (this.options.layout = newLayout) : this.options.layout;
   }
 
+  toString(obj) {
+    return (JSON.stringify(this,null,2) );
+  }
+
   // For simple objects only
   cloneObj(obj) {
     return JSON.parse(JSON.stringify(obj));

@@ -9,6 +9,7 @@ import NyChart from "./NyChart";
 import { chartColors } from "./Variables";
 
 const defaultDatasets = [
+  //NOTE populate these using Category Array
   {
     name: "persons",
     label: "People",
@@ -70,8 +71,8 @@ const defaultOptions = {
   elements: {
     line: {
       tension: 0.1,
-    //  stepped: true,
-      borderWidth: 1,
+      //  stepped: true,
+      borderWidth: 1
     }
   },
   title: {
@@ -104,36 +105,21 @@ class NyRadarChart extends NyChart {
     super(Categories, datasets, options, labels);
   }
 
-  setBoroughTotals(newBoroughData) {
+  populateBoroughTotals(newBoroughData) {
+        //NOTE this can now be got from the Categories Obj
     newBoroughData.forEach(rec => {
       this.datasets.forEach(ds => {
-        let catBoroughTot = rec["tot_" + ds.name + "_killed"];
-        ds.data.push(catBoroughTot);
-        //const thisCat = this.Categories.find(cat => cat.name === ds.name);
-        const thisCat = this.Categories.getCat(ds.name);
-        if (thisCat) {
-          thisCat.total += Number(catBoroughTot);
-        } else {
-          throw `Error: No cateory with name ${ds.name}`;
-        }
+        ds.data.push(rec["tot_" + ds.name + "_killed"]);
       });
     });
   }
 
-  setCollisionMax(newBoroughData) {
+  populateCollisionMax(newBoroughData) {
     newBoroughData.forEach(rec => {
       this.datasets.forEach(ds => {
         // "max_persons_killed_in_single_accident": "5",
-        let catBoroughMax =
-          rec["max_" + ds.name + "_killed_in_single_accident"];
-        //const thisCat = this.Categories.find(cat => cat.name === ds.name);
-        const thisCat = this.Categories.getCat(ds.name);
-        ds.data.push(catBoroughMax);
-        /* Also get the Grand Max for each Category */
-        thisCat.maxOneTime =
-          Number(catBoroughMax) > thisCat.maxOneTime
-            ? Number(catBoroughMax)
-            : thisCat.maxOneTime;
+        //NOTE this can now be got from the Categories Obj
+        ds.data.push(rec["max_" + ds.name + "_killed_in_single_accident"]);
       });
     });
   }

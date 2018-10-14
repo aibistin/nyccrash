@@ -6,12 +6,19 @@
 
 <script>
 import MainLayout from "../layouts/Main.vue";
+import Summary from "./Summary.vue";
 
 export default {
   name: "Home",
+  data: function(){
+    return { }
+  },
   components: {
-    MainLayout
-  }
+    MainLayout,
+    Summary,
+  },
+  mounted() {
+  },
 };
 </script>
 

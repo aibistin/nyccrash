@@ -8,7 +8,7 @@
                 <v-link class="button" href="/">Home</v-link>
               </p>
               <p class="control">
-                <v-link class="button" href="/stats">NYC Traffic Fatalities Summary</v-link>
+                <v-link class="button" href="/summary">NYC Traffic Fatalities Summary</v-link>
               </p>
             </div>
       </div>

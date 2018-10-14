@@ -11,20 +11,31 @@ class Categories {
     this.categories = this._toCategories();
   }
 
-  clone() {
-    return JSON.parse(JSON.stringify(this.categories));
-  }
-
   getCat(catName) {
     return this.categories.find(cat => cat.name === catName);
+  }
+
+  updateCatTotal(catName, qty) {
+    let cat = this.getCat(catName);
+    if (!cat) throw `Error: No cateory with name ${catName}`;
+    cat.total += Number(qty);
+  }
+
+  updateMaxOneTime(catName, qty) {
+    let cat = this.getCat(catName);
+    qty = Number(qty);
+    if (!cat) throw `Error: No cateory with name ${catName}`;
+    cat.maxOnetime = qty > cat.maxOneTime ? qty : thisCat.maxOneTime;
   }
 
   getTotals() {
     return this.categories.map(cat => cat.total);
   }
 
-  getLabels(categories){
-    return categories ? categories.map(cat => cat.label) : this.categories.map(cat => cat.label);
+  getLabels(categories) {
+    return categories
+      ? categories.map(cat => cat.label)
+      : this.categories.map(cat => cat.label);
   }
 
   toLabel(catName) {

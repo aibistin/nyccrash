@@ -72,12 +72,12 @@ const FatalitySummary = {
       if (param.groupByBorough) {
         console.count("Group by borough");
         groupBy = "&$group=borough";
-        orderBy  = "&$order=borough";
+        orderBy = "&$order=borough";
       } else {
         console.count("Group by year");
         filterByYear = "date_extract_y(date) AS year,";
         groupBy = "&$group=borough,year";
-        orderBy  = "&$order=year,borough";
+        orderBy = "&$order=year,borough";
       }
       return `MIN(date) AS starting_at,MAX(date) AS ending_at,
                     ${filterByYear}
@@ -94,8 +94,26 @@ const FatalitySummary = {
                     ${orderBy}
                     &$$app_token=${process.env.VUE_APP_NYC_APP_TOKEN}
                     `;
+    },
+    setBoroughTotals() {
+      this.fatalitySummary.forEach(rec => {
+        this.Categories.names.forEach(name => {
+          //TODO GET from Boroughs class (this is also in NyRadarChart)
+          let catBoroughTot = rec["tot_" + name + "_killed"];
+          this.Categories.updateCatTotal(name, catBoroughTot);
+        });
+      });
+    },
+    setCollisionMax() {
+      this.fatalitySummary.forEach(rec => {
+        this.Categories.names.forEach(name => {
+          let catBoroughMax = rec["max_" + name + "_killed_in_single_accident"];
+          this.Categories.updateMaxOneTime(name, catBoroughMax);
+        });
+      });
     }
-  }
+  },
+  computed: {}
 };
 
 export default FatalitySummary;

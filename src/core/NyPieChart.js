@@ -49,7 +49,7 @@ class NyPieChart extends NyChart {
     this.labels = labels.length ? labels : this.setLabels();
   }
 
-  setCategoryTotals() {
+  populateBoroughTotals() {
     this.datasets[0].data = this.Categories.getTotals().slice(1);
   }
 
@@ -59,7 +59,7 @@ class NyPieChart extends NyChart {
 
   _setChartColors() {
     this.Categories.names.slice(1).forEach(name => {
-      this.datasets[0].backgroundColor.push(chartColors[name].color);
+      this.datasets[0].backgroundColor.push(chartColors[name].colorBackground);
     });
   }
 }

@@ -49,6 +49,7 @@ const Boroughs = {
       maxOneTime: 0
     }
   ],
+
   clone() {
     return JSON.parse(JSON.stringify(this.boroughs));
   }
