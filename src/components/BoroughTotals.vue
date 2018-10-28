@@ -1,19 +1,8 @@
 <template>
-   <div>
-        <div class="item item--1-1">
-          <ul class="">
-            <li v-for="cat in Categories.categories" class="" >Total {{cat.name | uCaseFirst}} killed, {{ cat.total }}</li>
-          </ul> 
-        </div>
-
-        <div class="item item--1-2">
-          <pie-chart 
-              :data="fatalityTotalsBorough.chartData" 
-              :options="fatalityTotalsBorough.chartOptions" 
-              ></pie-chart>
-        </div>
-
-   </div>
+    <pie-chart 
+        :data="fatalityTotalsBorough.chartData" 
+        :options="fatalityTotalsBorough.chartOptions" 
+    ></pie-chart>
 </template>
 
 <script>

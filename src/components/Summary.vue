@@ -3,32 +3,47 @@
     <main-layout>
       <div class="grid-container">
         <template v-if="isFatalitySummary">
-            <div class="item item--header notification is-light">
+            <div class="heading notification is-light">
               <h3 class="subtitle is-3">Collision Fatalities From {{ timeRange.startingAt | formatYYMMDD }} to {{ timeRange.endingAt | formatYYMMDD }}</h3>
             </div>
-            <BoroughTotals
-              :Categories=Categories
-              :fatalitySummary=fatalitySummary
-              :titleDateStr=titleDateStr
-            /> 
 
-            <YearlySummary
-              :Categories=Categories
-              :fatalitySummaryYearly=fatalitySummaryYearly
-              :titleDateStr=titleDateStr
-            /> 
+            <div class="row_chart row_chart--1">
+              <div class="chart_display">
+                   <ul>
+                       <li v-for="cat in Categories.categories" class="" >Total {{cat.name | uCaseFirst}} killed, {{ cat.total }}</li>
+                   </ul> 
+                   <BoroughTotals
+                     :Categories=Categories
+                     :fatalitySummary=fatalitySummary
+                     :titleDateStr=titleDateStr
+                   /> 
+              </div>
+            </div>
 
-            <BoroughSummary
-              :Categories=Categories
-              :fatalitySummary=fatalitySummary
-              :titleDateStr=titleDateStr
-            /> 
+            <div class="row_chart row_chart--2">
+                 <YearlySummary
+                   :Categories=Categories
+                   :fatalitySummaryYearly=fatalitySummaryYearly
+                   :titleDateStr=titleDateStr
+                 /> 
+            </div>
 
-            <BoroCollisionMax
-              :fatalitySummary=fatalitySummary
-              :Categories=Categories
-              :titleDateStr=titleDateStr
-            />
+            <div class="row_chart row_chart--3">
+                 <BoroughSummary
+                   :Categories=Categories
+                   :fatalitySummary=fatalitySummary
+                   :titleDateStr=titleDateStr
+                 /> 
+            </div>
+
+            <div class="row_chart row_chart--4">
+                 <BoroCollisionMax
+                   :fatalitySummary=fatalitySummary
+                   :Categories=Categories
+                   :titleDateStr=titleDateStr
+                 />
+            </div>
+
         </template>
       </div>
     </main-layout>
@@ -117,4 +132,52 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.grid-container {
+  display: grid;
+  grid-column-gap: 1 rem;
+  grid-row-gap: 2rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: minmax(5rem,min-content) auto;
+  
+  margin: 2rem;
+  padding: 2rem;
+}
+
+.heading {
+  grid-column: 1/4;
+  grid-row: 1/2;
+}
+
+.row_chart{
+  margin: 2rem;
+  padding: 4rem;
+}
+.row_chart--1 {
+  grid-column: 1/4;
+  grid-row: 2/3;
+}
+
+.row_chart--2 {
+  grid-column: 1/4;
+  grid-row: 3/4;
+}
+
+.row_chart--3 {
+  grid-column: 1/4;
+  grid-row: 4/5;
+}
+
+.row_chart--4 {
+  grid-column: 1/4;
+  grid-row: 5/6;
+}
+
+.chart_display{
+  align-items: center;
+  justify-items: center;
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  grid-template-rows: 1fr;
+}
+
 </style>
