@@ -5,11 +5,11 @@
 </template>
 
 <script>
-  import MainLayout from '../layouts/Main.vue'
-  export default {
-    name: "404",
-    components: {
-      MainLayout
-    }
+import MainLayout from "../layouts/Main.vue";
+export default {
+  name: "404",
+  components: {
+    MainLayout
   }
+};
 </script>

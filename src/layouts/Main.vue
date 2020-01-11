@@ -30,6 +30,6 @@ export default {
 
 <style lang="scss">
 .container {
-  background: inherit
+  background: inherit;
 }
 </style>

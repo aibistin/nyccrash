@@ -50,7 +50,7 @@ class NyChart {
   }
 
   toString(obj) {
-    return (JSON.stringify(this,null,2) );
+    return JSON.stringify(this, null, 2);
   }
 
   // For simple objects only

@@ -1,10 +1,6 @@
 <template>
-  <a 
-    v-bind:href="href"
-    v-bind:class="{ active: isActive }"
-    v-on:click="go"
-  >
-         <slot></slot>
+  <a v-bind:href="href" v-bind:class="{ active: isActive }" v-on:click="go">
+    <slot></slot>
   </a>
 </template>
 
@@ -16,13 +12,13 @@ export default {
   props: {
     href: {
       type: String,
-      required: true,
+      required: true
     }
   },
   computed: {
-    isActive(){
-      return this.href == this.$root.currentRoute
-    },
+    isActive() {
+      return this.href == this.$root.currentRoute;
+    }
   },
   methods: {
     go(e) {

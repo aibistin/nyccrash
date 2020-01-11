@@ -68,18 +68,18 @@ const FatalitySummary = {
       let filterByYear = "";
       let groupBy = "";
       let orderBy = "";
-      let removeUnknown = '&$having=borough <> "Unknown Borough"';
+      // let removeUnknown = '&$having=borough <> "Unknown Borough"';
       if (param.groupByBorough) {
         console.count("Group by borough");
         groupBy = "&$group=borough";
         orderBy = "&$order=borough";
       } else {
         console.count("Group by year");
-        filterByYear = "date_extract_y(date) AS year,";
+        filterByYear = "date_extract_y(crash_date) AS year,";
         groupBy = "&$group=borough,year";
         orderBy = "&$order=year,borough";
       }
-      return `MIN(date) AS starting_at,MAX(date) AS ending_at,
+      return `MIN(crash_date) AS starting_at,MAX(crash_date) AS ending_at,
                     ${filterByYear}
                     coalesce(borough,"Unknown Borough") AS borough,
                     SUM(number_of_persons_killed) as tot_persons_killed,

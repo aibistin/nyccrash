@@ -10,15 +10,14 @@ import Summary from "./Summary.vue";
 
 export default {
   name: "Home",
-  data: function(){
-    return { }
+  data: function() {
+    return {};
   },
   components: {
     MainLayout,
-    Summary,
+    Summary
   },
-  mounted() {
-  },
+  mounted() {}
 };
 </script>
 

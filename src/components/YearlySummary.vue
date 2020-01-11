@@ -44,7 +44,7 @@ export default {
         }
         return years;
       }, []);
-      let chart = new NyBarChart(this.Categories,"persons",labels);
+      let chart = new NyBarChart(this.Categories, "persons", labels);
       /*TODO put onto NyBarChart */
 
       chart.populateYearlyTotals(this.fatalitySummaryYearly);
@@ -54,7 +54,7 @@ export default {
         chartOptions: chart.chartOptions()
       };
     }
-  },
+  }
 };
 </script>
 

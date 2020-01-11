@@ -106,7 +106,7 @@ class NyRadarChart extends NyChart {
   }
 
   populateBoroughTotals(newBoroughData) {
-        //NOTE this can now be got from the Categories Obj
+    //NOTE this can now be got from the Categories Obj
     newBoroughData.forEach(rec => {
       this.datasets.forEach(ds => {
         ds.data.push(rec["tot_" + ds.name + "_killed"]);

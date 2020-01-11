@@ -25,7 +25,7 @@ export default {
   mixins: [Filters],
   mounted() {},
   components: {
-    PieChart,
+    PieChart
   },
   methods: {},
   computed: {
@@ -39,8 +39,8 @@ export default {
         chartData: chart.chartData(),
         chartOptions: chart.chartOptions()
       };
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -137,8 +137,8 @@ export default {
   grid-column-gap: 1 rem;
   grid-row-gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: minmax(5rem,min-content) auto;
-  
+  grid-template-rows: minmax(5rem, min-content) auto;
+
   margin: 2rem;
   padding: 2rem;
 }
@@ -148,7 +148,7 @@ export default {
   grid-row: 1/2;
 }
 
-.row_chart{
+.row_chart {
   margin: 2rem;
   padding: 4rem;
 }
@@ -172,12 +172,11 @@ export default {
   grid-row: 5/6;
 }
 
-.chart_display{
+.chart_display {
   align-items: center;
   justify-items: center;
   display: grid;
   grid-template-columns: 20rem 1fr;
   grid-template-rows: 1fr;
 }
-
 </style>
