@@ -3,47 +3,55 @@
     <main-layout>
       <div class="grid-container">
         <template v-if="isFatalitySummary">
-            <div class="heading notification is-light">
-              <h3 class="subtitle is-3">Collision Fatalities From {{ timeRange.startingAt | formatYYMMDD }} to {{ timeRange.endingAt | formatYYMMDD }}</h3>
-            </div>
+          <div class="heading notification is-light">
+            <h3 class="subtitle is-3">
+              Collision Fatalities From
+              {{ timeRange.startingAt | formatYYMMDD }} to
+              {{ timeRange.endingAt | formatYYMMDD }}
+            </h3>
+          </div>
 
-            <div class="row_chart row_chart--1">
-              <div class="chart_display">
-                   <ul>
-                       <li v-for="cat in Categories.categories" class="" >Total {{cat.name | uCaseFirst}} killed, {{ cat.total }}</li>
-                   </ul> 
-                   <BoroughTotals
-                     :Categories=Categories
-                     :fatalitySummary=fatalitySummary
-                     :titleDateStr=titleDateStr
-                   /> 
-              </div>
+          <div class="row_chart row_chart--1">
+            <div class="chart_display">
+              <ul>
+                <li
+                  v-for="cat in Categories.categories"
+                  v-bind:key="cat.name"
+                >
+                  Total {{ cat.name | uCaseFirst }} killed, {{ cat.total }}
+                </li>
+              </ul>
+              <BoroughTotals
+                :Categories="Categories"
+                :fatalitySummary="fatalitySummary"
+                :titleDateStr="titleDateStr"
+              />
             </div>
+          </div>
 
-            <div class="row_chart row_chart--2">
-                 <YearlySummary
-                   :Categories=Categories
-                   :fatalitySummaryYearly=fatalitySummaryYearly
-                   :titleDateStr=titleDateStr
-                 /> 
-            </div>
+          <div class="row_chart row_chart--2">
+            <YearlySummary
+              :Categories="Categories"
+              :fatalitySummaryYearly="fatalitySummaryYearly"
+              :titleDateStr="titleDateStr"
+            />
+          </div>
 
-            <div class="row_chart row_chart--3">
-                 <BoroughSummary
-                   :Categories=Categories
-                   :fatalitySummary=fatalitySummary
-                   :titleDateStr=titleDateStr
-                 /> 
-            </div>
+          <div class="row_chart row_chart--3">
+            <BoroughSummary
+              :Categories="Categories"
+              :fatalitySummary="fatalitySummary"
+              :titleDateStr="titleDateStr"
+            />
+          </div>
 
-            <div class="row_chart row_chart--4">
-                 <BoroCollisionMax
-                   :fatalitySummary=fatalitySummary
-                   :Categories=Categories
-                   :titleDateStr=titleDateStr
-                 />
-            </div>
-
+          <div class="row_chart row_chart--4">
+            <BoroCollisionMax
+              :fatalitySummary="fatalitySummary"
+              :Categories="Categories"
+              :titleDateStr="titleDateStr"
+            />
+          </div>
         </template>
       </div>
     </main-layout>
@@ -84,6 +92,7 @@ export default {
     YearlySummary
   },
   beforeMount() {
+    this.clearOldLocalStorage();
     if (localStorage.fatalitySummary) {
       this.fatalitySummary = JSON.parse(localStorage.fatalitySummary);
     } else {
@@ -97,10 +106,32 @@ export default {
       this.getCollisionFatalitySummary({ groupByYear: true });
     }
   },
+  methods: {
+    clearOldLocalStorage() {
+      let clearedCt = 0;
+      ["fatalitySummary_Start", "fatalitySummaryYearly_Start"].forEach(
+        lStorageStartTimeName => {
+          let elapsedDays;
+          const startDateMs = localStorage.getItem(lStorageStartTimeName);
+          if (startDateMs)
+            elapsedDays = this.elapsedDays(startDateMs, Date.now());
+          if (!startDateMs || elapsedDays >= 1) {
+            const lStorageName = lStorageStartTimeName.replace(/_Start$/, "");
+            localStorage.removeItem(lStorageName);
+          }
+        }
+      );
+      return clearedCt;
+    },
+    elapsedDays(startDt, endDt) {
+      let elapsedSec = (startDt - endDt) / 1000;
+      return Math.floor(elapsedSec / (60 * 60 * 24));
+    }
+  },
+  mounted() {},
   computed: {
     isFatalitySummary() {
       if (this.fatalitySummary.length) {
-        console.count("Updating totals");
         this.setBoroughTotals();
         this.setCollisionMax();
       }

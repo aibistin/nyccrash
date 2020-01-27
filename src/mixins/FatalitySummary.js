@@ -1,10 +1,10 @@
-/* 
+/*
  *  Mixin: FatalitySummary
  *  Get the Collision Fatality Summary from NYC Open Data
- *  See: https://opendata.cityofnewyork.us/ 
+ *  See: https://opendata.cityofnewyork.us/
  *  And: https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95
- * 
- * Returns a collection of data similar to this: 
+ *
+ * Returns a collection of data similar to this:
  *  {
  *         "borough": "QUEENS",
  *         "ending_at": "2018-08-26T00:00:00.000",
@@ -18,7 +18,7 @@
  *         "max_pedestrians_killed_in_single_accident": "2",
  *         "starting_at": "2012-07-01T00:00:00.000",
  *   },
- * 
+ *
  */
 import axios from "axios";
 
@@ -37,9 +37,11 @@ const FatalitySummary = {
           if (param.groupByBorough) {
             localStorage.fatalitySummary = JSON.stringify(response.data);
             this.fatalitySummary = response.data;
+            localStorage.setItem("fatalitySummary_Start", Date.now());
           } else {
             localStorage.fatalitySummaryYearly = JSON.stringify(response.data);
             this.fatalitySummaryYearly = response.data;
+            localStorage.setItem("fatalitySummaryYearly_Start", Date.now());
           }
 
           /* TODO - What to do with this */
@@ -68,7 +70,6 @@ const FatalitySummary = {
       let filterByYear = "";
       let groupBy = "";
       let orderBy = "";
-      // let removeUnknown = '&$having=borough <> "Unknown Borough"';
       if (param.groupByBorough) {
         console.count("Group by borough");
         groupBy = "&$group=borough";

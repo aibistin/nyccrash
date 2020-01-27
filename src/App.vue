@@ -5,13 +5,11 @@
 </template>
 
 <script>
-import Collision from "./components/Collision.vue";
+/import Collision from "./components/Collision.vue";
 
 export default {
   name: "app",
-  components: {
-    Collision
-  }
+  components: { Collision }
 };
 </script>
 
